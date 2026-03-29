@@ -886,7 +886,7 @@ async function showQRCode() {
                         CEO cảm ơn bạn đã ghé thăm 💙
                     </p>
                     <p style="color: #666; font-size: 0.8rem; margin-top: 8px;">
-                        📱 Theo dõi: facebook.com/SupportGroupUET
+                        📱 Theo dõi: https://www.facebook.com/ceo.ulis.vnu
                     </p>
                 `;
                 qrcodeContainer.appendChild(successMsg);
