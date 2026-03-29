@@ -1,7 +1,7 @@
 {
-  "name": "sguet-photobooth",
+  "name": "ceo-photobooth",
   "version": "1.0.0",
-  "description": "SGUET Photobooth - 3-photo capture with frames",
+  "description": "CEO Photobooth - 3-photo capture with frames",
   "dependencies": {
     "form-data": "^4.0.0",
     "node-fetch": "^2.7.0"

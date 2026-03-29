@@ -1,4 +1,4 @@
-# SGUET Photobooth - Web Chụp Ảnh Kỷ Yếu
+# CEO Photobooth - Web Chụp Ảnh Kỷ Yếu
 
 Web photobooth chụp tự động 3 ảnh và ghép vào khung ảnh, có mã QR để tải về điện thoại.
 
@@ -16,7 +16,7 @@ Web photobooth chụp tự động 3 ảnh và ghép vào khung ảnh, có mã Q
 ## 📁 Cấu trúc thư mục
 
 ```
-Photobooth - SGUET/
+Photobooth - CEO/
 ├── index.html          # Trang web chính
 ├── style.css          # File CSS
 ├── app.js             # Logic chính

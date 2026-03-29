@@ -1,7 +1,7 @@
 // ===== STATE & CONFIG =====
 const STATE = {
     stream: null,
-    photos: [null, null, null],
+    photos: [null, null, null, null],
     beautyMode: true,
     countdownTime: 3,
     isCapturing: false,
@@ -82,6 +82,34 @@ let FRAME_POSITIONS = {
         "centerX": false
       }
     ]
+    },
+    "./Frames/Frame4.png": {
+        "photoSize": {
+            "width": 847,
+            "height": 622
+        },
+        "positions": [
+            {
+                "x": 58,
+                "y": 76,
+                "centerX": false
+            },
+            {
+                "x": 58,
+                "y": 721,
+                "centerX": false
+            },
+            {
+                "x": 58,
+                "y": 1371,
+                "centerX": false
+            },
+            {
+                "x": 58,
+                "y": 2016,
+                "centerX": false
+            }
+        ]
   }
 };
 
@@ -443,8 +471,8 @@ async function startAutoCapture() {
     STATE.isCapturing = true;
     captureBtn.disabled = true;
     
-    // Chụp 3 ảnh tự động
-    for (let i = 0; i < 3; i++) {
+    // Chụp 4 ảnh tự động
+    for (let i = 0; i < 4; i++) {
         // Countdown
         await doCountdown();
         
@@ -452,7 +480,7 @@ async function startAutoCapture() {
         await capturePhoto(i);
         
         // Wait before next photo (except last one)
-        if (i < 2) {
+        if (i < 3) {
             await sleep(1000);
         }
     }
@@ -592,7 +620,7 @@ function resetPhotos() {
 
 function updatePhotoCount() {
     const count = STATE.photos.filter(p => p !== null).length;
-    photoCount.textContent = `${count}/3`;
+    photoCount.textContent = `${count}/4`;
 }
 
 // ===== FRAMES =====
@@ -604,9 +632,7 @@ let currentPreviewFrame = null;
 
 function loadFrames() {
     const frames = [
-        { name: 'Frame 1', path: './Frames/Frame1.png' },
-        { name: 'Frame 2', path: './Frames/Frame2.png' },
-        { name: 'Frame 3', path: './Frames/Frame3.png' }
+        { name: 'Frame 4', path: './Frames/Frame4.png' }
     ];
     
     frameGrid.innerHTML = '';
@@ -614,6 +640,7 @@ function loadFrames() {
     frames.forEach(frame => {
         const item = document.createElement('div');
         item.className = 'frame-item';
+        item.dataset.framePath = frame.path;
         item.innerHTML = `
             <img src="${frame.path}" alt="${frame.name}">
             <p>${frame.name}</p>
@@ -657,7 +684,7 @@ async function createFramedImage(framePath) {
     }
     
     const frameImg = await loadImageSafe(framePath);
-    const photosToUse = STATE.photos.filter(p => p !== null).slice(0, 3);
+    const photosToUse = STATE.photos.filter(p => p !== null).slice(0, config.positions.length);
     if (photosToUse.length === 0) {
         throw new Error('Không có ảnh nào!');
     }
@@ -714,11 +741,13 @@ async function createFramedImage(framePath) {
 function openFrameModal() {
     frameModal.classList.add('active');
     
-    // Auto-select first frame
+    // Auto-select Frame4 by default
     setTimeout(() => {
-        const firstFrame = document.querySelector('.frame-item');
-        if (firstFrame) {
-            firstFrame.click();
+        const defaultFrame = document.querySelector('.frame-item[data-frame-path="./Frames/Frame4.png"]');
+        const fallbackFrame = document.querySelector('.frame-item');
+        const frameToSelect = defaultFrame || fallbackFrame;
+        if (frameToSelect) {
+            frameToSelect.click();
         }
     }, 100);
 }
@@ -735,8 +764,8 @@ async function selectFrame(framePath) {
         return;
     }
     
-    // Save frame path before closing modal
-    const selectedFramePath = currentPreviewFrame;
+    // Force Frame4 as the only valid frame for final output
+    const selectedFramePath = './Frames/Frame4.png';
     STATE.selectedFrame = selectedFramePath;
     closeFrameModal();
     
@@ -854,7 +883,7 @@ async function showQRCode() {
                         ✅ Quét QR để xem và tải ảnh
                     </p>
                     <p style="color: #2196F3; font-size: 1rem; margin-top: 12px; font-weight: 600;">
-                        SGUET cảm ơn bạn đã ghé thăm 💙
+                        CEO cảm ơn bạn đã ghé thăm 💙
                     </p>
                     <p style="color: #666; font-size: 0.8rem; margin-top: 8px;">
                         📱 Theo dõi: facebook.com/SupportGroupUET
@@ -881,7 +910,7 @@ async function showQRCode() {
                     <i class="fas fa-download"></i> Tải về máy tính
                 </button>
                 <p style="color: #2196F3; font-size: 1rem; margin-top: 15px; font-weight: 600;">
-                    SGUET cảm ơn bạn 💙
+                    CEO cảm ơn bạn 💙
                 </p>
             </div>
         `;
@@ -902,7 +931,7 @@ function downloadImage() {
     if (!STATE.finalImage) return;
     
     const link = document.createElement('a');
-    link.download = `SGUET-Photobooth-${Date.now()}.png`;
+    link.download = `CEO-Photobooth-${Date.now()}.png`;
     link.href = STATE.finalImage;
     link.click();
 }
@@ -1110,7 +1139,7 @@ function openSwapModal(fromIndex) {
     swapFromIndex = fromIndex;
     swapOptions.innerHTML = '';
     
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < STATE.photos.length; i++) {
         const btn = document.createElement('button');
         btn.className = 'swap-option-btn';
         btn.textContent = `Ảnh ${i + 1}`;
@@ -1176,7 +1205,7 @@ function swapPhotos(fromIndex, toIndex) {
 async function captureSinglePhoto() {
     const emptyIndex = STATE.photos.findIndex(p => p === null);
     if (emptyIndex === -1) {
-        alert('Đã chụp đủ 3 ảnh!');
+        alert('Đã chụp đủ 4 ảnh!');
         return;
     }
     
@@ -1194,7 +1223,8 @@ async function captureSinglePhoto() {
 
 function updateButtons() {
     const photosFilled = STATE.photos.filter(p => p !== null).length;
-    const hasEmptySlots = photosFilled < 3;
+    const totalSlots = STATE.photos.length;
+    const hasEmptySlots = photosFilled < totalSlots;
     
     // Show/hide single capture button if there are empty slots after initial capture
     if (hasEmptySlots && photosFilled > 0) {
@@ -1203,8 +1233,8 @@ function updateButtons() {
         singleCaptureBtn.classList.add('hidden');
     }
     
-    // Show select frame button when all 3 photos are taken
-    if (photosFilled === 3) {
+    // Show select frame button when all required photos are taken
+    if (photosFilled === totalSlots) {
         selectFrameBtn.classList.remove('hidden');
         captureBtn.classList.add('hidden');
         singleCaptureBtn.classList.add('hidden');

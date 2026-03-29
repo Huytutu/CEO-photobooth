@@ -41,7 +41,7 @@ export default async function handler(req, res) {
             body: form,
             headers: {
                 ...form.getHeaders(),
-                'User-Agent': 'SGUET-Photobooth/1.0'
+                'User-Agent': 'CEO-Photobooth/1.0'
             }
         });
         

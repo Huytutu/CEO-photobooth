@@ -20,7 +20,7 @@
     <meta name="apple-mobile-web-app-title" content="CEO Photo" />
     <meta
       name="description"
-      content="Ứng dụng chụp ảnh kỷ yếu CEO - Tự động chụp 3 ảnh"
+      content="Ứng dụng chụp ảnh kỷ yếu CEO - Tự động chụp 4 ảnh"
     />
     <link
       rel="stylesheet"
@@ -32,8 +32,7 @@
     <!-- Header -->
     <header class="header">
       <h1>
-        <img src="SGUET.jpg" alt="CEO Logo" class="header-logo" /> CEO
-        Photobooth
+        <img src="CEO.png" alt="CEO Logo" class="header-logo" /> CEO Photobooth
       </h1>
     </header>
 
@@ -86,7 +85,7 @@
       <aside class="photos-panel">
         <h3>
           <i class="fas fa-images"></i> Ảnh Đã Chụp
-          <span id="photoCount" class="photo-count">0/3</span>
+          <span id="photoCount" class="photo-count">0/4</span>
         </h3>
         <div class="photo-slots">
           <div class="photo-slot" data-index="0">
@@ -149,6 +148,26 @@
               style="display: none"
             />
           </div>
+          <div class="photo-slot" data-index="3">
+            <i class="fas fa-image"></i>
+            <span>Ảnh 4</span>
+            <button class="upload-photo-btn" data-index="3" title="Tải ảnh lên">
+              <i class="fas fa-upload"></i>
+            </button>
+            <button class="delete-photo-btn hidden" data-index="3">
+              <i class="fas fa-times"></i>
+            </button>
+            <button class="swap-photo-btn hidden" data-index="3">
+              <i class="fas fa-arrows-rotate"></i>
+            </button>
+            <input
+              type="file"
+              class="photo-upload-input"
+              data-index="3"
+              accept="image/*"
+              style="display: none"
+            />
+          </div>
         </div>
 
         <button id="selectFrameBtn" class="btn btn-success hidden">
@@ -199,7 +218,7 @@
           <div class="status-info">
             <p>
               <i class="fas fa-images"></i> Số ảnh:
-              <strong id="photoCount">0/3</strong>
+              <strong id="photoCount">0/4</strong>
             </p>
             <p>
               <i class="fas fa-hourglass-half"></i> Chờ:

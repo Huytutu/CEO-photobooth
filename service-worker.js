@@ -1,14 +1,16 @@
-const CACHE_NAME = 'sguet-photobooth-v3';
+const CACHE_NAME = 'ceo-photobooth-v6';
 const urlsToCache = [
   '/',
   '/index.html',
   '/preview.html',
   '/style.css',
   '/app.js',
-  '/SGUET.jpg',
+  '/CEO.png',
   '/manifest.json',
   '/Frames/Frame1.png',
   '/Frames/Frame2.png',
+  '/Frames/Frame3.png',
+  '/Frames/Frame4.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];

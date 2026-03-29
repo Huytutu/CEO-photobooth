@@ -1,7 +1,7 @@
 {
-  "name": "SGUET Photobooth",
-  "short_name": "SGUET Photo",
-  "description": "Ứng dụng chụp ảnh kỷ yếu SGUET - Tự động chụp 3 ảnh",
+  "name": "CEO Photobooth",
+  "short_name": "CEO Photo",
+  "description": "Ứng dụng chụp ảnh kỷ yếu CEO - Tự động chụp 3 ảnh",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -10,9 +10,9 @@
   "scope": "/",
   "icons": [
     {
-      "src": "SGUET.jpg",
+      "src": "CEO.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
