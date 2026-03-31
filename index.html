@@ -151,23 +151,35 @@
         <div class="settings-card">
           <h3><i class="fas fa-images"></i> Số ảnh chụp tự động</h3>
           <div class="timer-options" id="autoShotOptions">
-            <button class="timer-btn auto-shot-btn" data-count="4" type="button">
+            <button
+              class="timer-btn auto-shot-btn"
+              data-count="4"
+              type="button"
+            >
               <i class="fas fa-bolt"></i>
               <span>4</span>
             </button>
-            <button class="timer-btn auto-shot-btn active" data-count="8" type="button">
+            <button
+              class="timer-btn auto-shot-btn active"
+              data-count="8"
+              type="button"
+            >
               <i class="fas fa-camera"></i>
               <span>8</span>
             </button>
-            <button class="timer-btn auto-shot-btn" data-count="12" type="button">
+            <button
+              class="timer-btn auto-shot-btn"
+              data-count="12"
+              type="button"
+            >
               <i class="fas fa-images"></i>
               <span>12</span>
             </button>
-            <button class="timer-btn auto-shot-btn" data-count="16" type="button">
-              <i class="fas fa-layer-group"></i>
-              <span>16</span>
-            </button>
-            <button class="timer-btn timer-btn-custom" id="customAutoShotBtn" type="button">
+            <button
+              class="timer-btn timer-btn-custom"
+              id="customAutoShotBtn"
+              type="button"
+            >
               <i class="fas fa-sliders"></i>
               <span>Tùy chọn</span>
             </button>
@@ -180,7 +192,11 @@
               step="1"
               placeholder="Nhập số ảnh muốn chụp"
             />
-            <button id="applyCustomAutoShotCountBtn" class="btn-small" type="button">
+            <button
+              id="applyCustomAutoShotCountBtn"
+              class="btn-small"
+              type="button"
+            >
               Áp dụng
             </button>
           </div>
@@ -234,7 +250,11 @@
             </div>
 
             <div class="frame-preview-actions">
-              <button class="btn btn-primary" id="confirmFrameBtn" type="button">
+              <button
+                class="btn btn-primary"
+                id="confirmFrameBtn"
+                type="button"
+              >
                 <i class="fas fa-check"></i> Xác Nhận Khung
               </button>
             </div>
@@ -269,12 +289,14 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2><i class="fas fa-check-square"></i> Chọn 4 Ảnh Để In Khung</h2>
-          <button class="modal-close" id="closePhotoSelectModal">&times;</button>
+          <button class="modal-close" id="closePhotoSelectModal">
+            &times;
+          </button>
         </div>
         <div class="photo-select-body">
           <p style="margin-bottom: 10px">
-            Đã chụp nhiều ảnh. Hãy chọn <strong>tối đa 4 ảnh đẹp nhất</strong> để đưa vào
-            khung.
+            Đã chụp nhiều ảnh. Hãy chọn
+            <strong>tối đa 4 ảnh đẹp nhất</strong> để đưa vào khung.
           </p>
           <div id="photoSelectGrid" class="photo-select-grid">
             <!-- filled dynamically -->
