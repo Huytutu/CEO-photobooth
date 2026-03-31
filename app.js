@@ -967,8 +967,7 @@ async function selectFrame(framePath) {
         STATE.finalImage = await createFramedImage(selectedFramePath);
 
         document.body.removeChild(loading);
-        // Hiển thị result UI + QR
-        showResultUI();
+        // Hiển thị QR ngay sau khi xử lý ảnh
         showQRCode();
     } catch (error) {
         if (document.body.contains(loading)) {
