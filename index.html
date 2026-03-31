@@ -217,6 +217,40 @@
       </aside>
     </div>
 
+    <!-- Frame Selection Modal -->
+    <div id="frameModal" class="modal">
+      <div class="modal-content frame-selector-layout">
+        <div class="modal-header">
+          <h2><i class="fas fa-images"></i> Chọn Khung Ảnh</h2>
+          <button class="modal-close" id="closeFrameModal">&times;</button>
+        </div>
+
+        <div class="frame-content-wrapper">
+          <!-- Left Column: Preview (Sticky) -->
+          <div class="frame-preview-column">
+            <h4><i class="fas fa-eye"></i> Xem Trước</h4>
+            <div id="framePreview" class="frame-preview-container">
+              <p style="color: #666">Chọn khung để xem preview</p>
+            </div>
+
+            <div class="frame-preview-actions">
+              <button class="btn btn-primary" id="confirmFrameBtn" type="button">
+                <i class="fas fa-check"></i> Xác Nhận Khung
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column: Frame Options (Scrollable) -->
+          <div class="frame-options-column">
+            <h4><i class="fas fa-images"></i> Danh Sách Khung</h4>
+            <div class="frame-grid" id="frameGrid">
+              <!-- Frame options will be generated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Swap Modal -->
     <div id="swapModal" class="modal">
       <div class="modal-content">

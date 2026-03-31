@@ -946,14 +946,13 @@ function closeFrameModal() {
 }
 
 async function selectFrame(framePath) {
-    // This is now the confirm button handler
-    if (!currentPreviewFrame) {
+    // Đây là handler khi bấm nút xác nhận khung
+    const selectedFramePath = currentPreviewFrame || framePath;
+    if (!selectedFramePath) {
         alert('Vui lòng chọn một khung ảnh!');
         return;
     }
-    
-    // Force Frame4 as the only valid frame for final output
-    const selectedFramePath = './Frames/Frame4.png';
+
     STATE.selectedFrame = selectedFramePath;
     closeFrameModal();
     
@@ -964,13 +963,12 @@ async function selectFrame(framePath) {
     document.body.appendChild(loading);
     
     try {
-        // Create final image with saved path
-        const finalImageData = await createFramedImage(selectedFramePath);
-        STATE.finalImage = finalImageData;
-        
+        // Tạo ảnh cuối với khung đã chọn
+        STATE.finalImage = await createFramedImage(selectedFramePath);
+
         document.body.removeChild(loading);
-        
-        // Show QR modal
+        // Hiển thị result UI + QR
+        showResultUI();
         showQRCode();
     } catch (error) {
         if (document.body.contains(loading)) {
@@ -1480,28 +1478,8 @@ async function confirmPhotoSelection() {
     updatePhotoCount();
     updateButtons();
 
-    // Auto generate final image with default frame (Frame4)
-    const selectedFramePath = './Frames/Frame4.png';
-    STATE.selectedFrame = selectedFramePath;
-
-    // Show loading
-    const loading = document.createElement('div');
-    loading.style.cssText =
-        'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 10px; z-index: 9999; font-size: 18px;';
-    loading.textContent = '⏳ Đang xử lý...';
-    document.body.appendChild(loading);
-
-    try {
-        STATE.finalImage = await createFramedImage(selectedFramePath);
-        document.body.removeChild(loading);
-        showQRCode();
-    } catch (error) {
-        if (document.body.contains(loading)) {
-            document.body.removeChild(loading);
-        }
-        console.error('Frame generation error:', error);
-        alert('Lỗi khi xử lý ảnh: ' + error.message);
-    }
+    // Sau khi chọn 4 ảnh, chuyển sang bước chọn khung
+    openFrameModal();
 }
 
 async function handleModalUploadFiles(event) {
