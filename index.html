@@ -53,6 +53,20 @@
             <div id="countdown" class="countdown-overlay hidden">
               <div id="countdownNumber" class="countdown-number">3</div>
             </div>
+
+            <!-- Shot Counter Overlay -->
+            <div id="shotCounterOverlay" class="shot-counter-overlay hidden">
+              <span id="shotCounterText">0/0</span>
+            </div>
+
+            <!-- Flash effect + captured preview -->
+            <div id="flashOverlay" class="flash-overlay hidden"></div>
+            <div
+              id="capturePreviewOverlay"
+              class="capture-preview-overlay hidden"
+            >
+              <img id="capturePreviewImg" alt="Ảnh vừa chụp" />
+            </div>
           </div>
 
           <!-- Capture Button (Right Side) -->
@@ -72,114 +86,17 @@
           <button id="startBtn" class="btn btn-primary">
             <i class="fas fa-video"></i> Bật Camera
           </button>
-          <button id="singleCaptureBtn" class="btn btn-info hidden">
-            <i class="fas fa-camera"></i> Chụp 1 Ảnh
-          </button>
           <button id="resetBtn" class="btn btn-warning hidden">
             <i class="fas fa-redo"></i> Chụp Lại
           </button>
         </div>
       </main>
 
-      <!-- Right Panel: Photos -->
-      <aside class="photos-panel">
-        <h3>
-          <i class="fas fa-images"></i> Ảnh Đã Chụp
-          <span id="photoCount" class="photo-count">0/4</span>
-        </h3>
-        <div class="photo-slots">
-          <div class="photo-slot" data-index="0">
-            <i class="fas fa-image"></i>
-            <span>Ảnh 1</span>
-            <button class="upload-photo-btn" data-index="0" title="Tải ảnh lên">
-              <i class="fas fa-upload"></i>
-            </button>
-            <button class="delete-photo-btn hidden" data-index="0">
-              <i class="fas fa-times"></i>
-            </button>
-            <button class="swap-photo-btn hidden" data-index="0">
-              <i class="fas fa-arrows-rotate"></i>
-            </button>
-            <input
-              type="file"
-              class="photo-upload-input"
-              data-index="0"
-              accept="image/*"
-              style="display: none"
-            />
-          </div>
-          <div class="photo-slot" data-index="1">
-            <i class="fas fa-image"></i>
-            <span>Ảnh 2</span>
-            <button class="upload-photo-btn" data-index="1" title="Tải ảnh lên">
-              <i class="fas fa-upload"></i>
-            </button>
-            <button class="delete-photo-btn hidden" data-index="1">
-              <i class="fas fa-times"></i>
-            </button>
-            <button class="swap-photo-btn hidden" data-index="1">
-              <i class="fas fa-arrows-rotate"></i>
-            </button>
-            <input
-              type="file"
-              class="photo-upload-input"
-              data-index="1"
-              accept="image/*"
-              style="display: none"
-            />
-          </div>
-          <div class="photo-slot" data-index="2">
-            <i class="fas fa-image"></i>
-            <span>Ảnh 3</span>
-            <button class="upload-photo-btn" data-index="2" title="Tải ảnh lên">
-              <i class="fas fa-upload"></i>
-            </button>
-            <button class="delete-photo-btn hidden" data-index="2">
-              <i class="fas fa-times"></i>
-            </button>
-            <button class="swap-photo-btn hidden" data-index="2">
-              <i class="fas fa-arrows-rotate"></i>
-            </button>
-            <input
-              type="file"
-              class="photo-upload-input"
-              data-index="2"
-              accept="image/*"
-              style="display: none"
-            />
-          </div>
-          <div class="photo-slot" data-index="3">
-            <i class="fas fa-image"></i>
-            <span>Ảnh 4</span>
-            <button class="upload-photo-btn" data-index="3" title="Tải ảnh lên">
-              <i class="fas fa-upload"></i>
-            </button>
-            <button class="delete-photo-btn hidden" data-index="3">
-              <i class="fas fa-times"></i>
-            </button>
-            <button class="swap-photo-btn hidden" data-index="3">
-              <i class="fas fa-arrows-rotate"></i>
-            </button>
-            <input
-              type="file"
-              class="photo-upload-input"
-              data-index="3"
-              accept="image/*"
-              style="display: none"
-            />
-          </div>
-        </div>
-
-        <button id="selectFrameBtn" class="btn btn-success hidden">
-          <i class="fas fa-images"></i> Chọn Khung Ảnh
-        </button>
-      </aside>
-
       <!-- Bottom Panel: Settings -->
       <aside class="settings-panel">
         <div class="settings-card">
           <h3><i class="fas fa-clock"></i> Thời Gian Tự Động Chụp</h3>
-          <div class="timer-options">
+          <div class="timer-options" id="countdownOptions">
             <button class="timer-btn" data-timer="0">
               <i class="fas fa-bolt"></i>
               <span>Không</span>
@@ -218,12 +135,54 @@
           <div class="status-info">
             <p>
               <i class="fas fa-images"></i> Số ảnh:
-              <strong id="photoCount">0/4</strong>
+              <strong id="photoCount">0 ảnh</strong>
             </p>
             <p>
               <i class="fas fa-hourglass-half"></i> Chờ:
               <strong id="timerDisplay">3s</strong>
             </p>
+            <p>
+              <i class="fas fa-info-circle"></i> Trạng thái:
+              <strong id="captureStatus">Chưa chụp</strong>
+            </p>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3><i class="fas fa-images"></i> Số ảnh chụp tự động</h3>
+          <div class="timer-options" id="autoShotOptions">
+            <button class="timer-btn auto-shot-btn" data-count="4" type="button">
+              <i class="fas fa-bolt"></i>
+              <span>4</span>
+            </button>
+            <button class="timer-btn auto-shot-btn active" data-count="8" type="button">
+              <i class="fas fa-camera"></i>
+              <span>8</span>
+            </button>
+            <button class="timer-btn auto-shot-btn" data-count="12" type="button">
+              <i class="fas fa-images"></i>
+              <span>12</span>
+            </button>
+            <button class="timer-btn auto-shot-btn" data-count="16" type="button">
+              <i class="fas fa-layer-group"></i>
+              <span>16</span>
+            </button>
+            <button class="timer-btn timer-btn-custom" id="customAutoShotBtn" type="button">
+              <i class="fas fa-sliders"></i>
+              <span>Tùy chọn</span>
+            </button>
+          </div>
+          <div id="customAutoShotInput" class="custom-timer hidden">
+            <input
+              type="number"
+              id="customAutoShotCount"
+              min="4"
+              step="1"
+              placeholder="Nhập số ảnh muốn chụp"
+            />
+            <button id="applyCustomAutoShotCountBtn" class="btn-small" type="button">
+              Áp dụng
+            </button>
           </div>
         </div>
 
@@ -271,36 +230,36 @@
       </div>
     </div>
 
-    <!-- Frame Selection Modal -->
-    <div id="frameModal" class="modal">
-      <div class="modal-content frame-selector-layout">
+    <!-- Photo Selection Modal (choose 4 from many) -->
+    <div id="photoSelectModal" class="modal">
+      <div class="modal-content">
         <div class="modal-header">
-          <h2><i class="fas fa-images"></i> Chọn Khung Ảnh</h2>
-          <button class="modal-close" id="closeFrameModal">&times;</button>
+          <h2><i class="fas fa-check-square"></i> Chọn 4 Ảnh Để In Khung</h2>
+          <button class="modal-close" id="closePhotoSelectModal">&times;</button>
         </div>
-
-        <div class="frame-content-wrapper">
-          <!-- Left Column: Preview (Sticky) -->
-          <div class="frame-preview-column">
-            <h4><i class="fas fa-eye"></i> Xem Trước</h4>
-            <div id="framePreview" class="frame-preview-container">
-              <p style="color: #666">Chọn khung để xem preview</p>
-            </div>
-
-            <div class="frame-preview-actions">
-              <button class="btn btn-primary" id="confirmFrameBtn">
-                <i class="fas fa-check"></i> Xác Nhận
-              </button>
-            </div>
+        <div class="photo-select-body">
+          <p style="margin-bottom: 10px">
+            Đã chụp nhiều ảnh. Hãy chọn <strong>tối đa 4 ảnh đẹp nhất</strong> để đưa vào
+            khung.
+          </p>
+          <div id="photoSelectGrid" class="photo-select-grid">
+            <!-- filled dynamically -->
           </div>
-
-          <!-- Right Column: Frame Options (Scrollable) -->
-          <div class="frame-options-column">
-            <h4><i class="fas fa-images"></i> Danh Sách Khung</h4>
-            <div class="frame-grid" id="frameGrid">
-              <!-- Frame options will be generated dynamically -->
-            </div>
-          </div>
+        </div>
+        <div class="photo-select-actions">
+          <button id="addPhotoFromDeviceBtn" class="btn btn-info" type="button">
+            <i class="fas fa-upload"></i> Thêm ảnh từ máy
+          </button>
+          <input
+            type="file"
+            id="photoSelectUploadInput"
+            accept="image/*"
+            multiple
+            style="display: none"
+          />
+          <button id="confirmPhotoSelectionBtn" class="btn btn-success">
+            <i class="fas fa-check"></i> Xác Nhận 4 Ảnh
+          </button>
         </div>
       </div>
     </div>

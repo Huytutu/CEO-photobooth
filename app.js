@@ -1,9 +1,18 @@
 // ===== STATE & CONFIG =====
 const STATE = {
     stream: null,
+    // 4 photos used for the final frame
     photos: [null, null, null, null],
+    // All shots taken in a session (for user to choose from)
+    allPhotos: [],
     beautyMode: true,
     countdownTime: 3,
+    // How many photos to take automatically in one sequence
+    autoCaptureCount: 8,
+    shotsTaken: 0,
+    shotsTarget: 0,
+    // true: after capturing, show modal to select 4; false: auto-pick first 4
+    manualPickFourForFrame: true,
     isCapturing: false,
     isFlipped: true,
     selectedFrame: null,
@@ -119,16 +128,30 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const countdown = document.getElementById('countdown');
 const countdownNumber = document.getElementById('countdownNumber');
+const shotCounterOverlay = document.getElementById('shotCounterOverlay');
+const shotCounterText = document.getElementById('shotCounterText');
+
+const flashOverlay = document.getElementById('flashOverlay');
+const capturePreviewOverlay = document.getElementById('capturePreviewOverlay');
+const capturePreviewImg = document.getElementById('capturePreviewImg');
 
 const startBtn = document.getElementById('startBtn');
 const captureBtn = document.getElementById('captureBtn');
-const singleCaptureBtn = document.getElementById('singleCaptureBtn');
 const resetBtn = document.getElementById('resetBtn');
-const selectFrameBtn = document.getElementById('selectFrameBtn');
 const flipBtn = document.getElementById('flipBtn');
 
 const photoCount = document.getElementById('photoCount');
 const timerDisplay = document.getElementById('timerDisplay');
+const captureStatusEl = document.getElementById('captureStatus');
+
+// Settings: auto-shot count & photo selection mode
+const autoShotButtons = document.querySelectorAll('.auto-shot-btn');
+const autoShotOptionsCustomBtn = document.getElementById('customAutoShotBtn');
+const customAutoShotInputWrapper = document.getElementById('customAutoShotInput');
+const customAutoShotCountInput = document.getElementById('customAutoShotCount');
+const applyCustomAutoShotCountBtn = document.getElementById('applyCustomAutoShotCountBtn');
+const photoSelectManualBtn = document.getElementById('photoSelectManualBtn');
+const photoSelectAutoBtn = document.getElementById('photoSelectAutoBtn');
 
 const frameModal = document.getElementById('frameModal');
 const frameGrid = document.getElementById('frameGrid');
@@ -141,6 +164,14 @@ const qrModal = document.getElementById('qrModal');
 const closeQrModal = document.getElementById('closeQrModal');
 const downloadDirectBtn = document.getElementById('downloadDirectBtn');
 const newPhotoBtn = document.getElementById('newPhotoBtn');
+
+// Photo selection modal (choose 4 from many)
+const photoSelectModal = document.getElementById('photoSelectModal');
+const photoSelectGrid = document.getElementById('photoSelectGrid');
+const closePhotoSelectModalBtn = document.getElementById('closePhotoSelectModal');
+const confirmPhotoSelectionBtn = document.getElementById('confirmPhotoSelectionBtn');
+const addPhotoFromDeviceBtn = document.getElementById('addPhotoFromDeviceBtn');
+const photoSelectUploadInput = document.getElementById('photoSelectUploadInput');
 
 // ===== PWA SERVICE WORKER =====
 if ('serviceWorker' in navigator) {
@@ -158,6 +189,8 @@ if ('serviceWorker' in navigator) {
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
     initTimerButtons();
+    initAutoShotCountButtons();
+    initPhotoSelectionMode();
     initBeautyToggle();
     initEventListeners();
     initPhotoSlotButtons();
@@ -170,7 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ===== TIMER BUTTONS =====
 function initTimerButtons() {
-    const timerButtons = document.querySelectorAll('.timer-btn:not(.timer-btn-custom)');
+    const countdownContainer = document.getElementById('countdownOptions');
+    if (!countdownContainer) return;
+
+    const timerButtons = countdownContainer.querySelectorAll('.timer-btn:not(.timer-btn-custom)');
     const customTimerBtn = document.getElementById('customTimerBtn');
     const customTimerInput = document.getElementById('customTimerInput');
     
@@ -205,6 +241,70 @@ function initTimerButtons() {
             alert('Vui lòng nhập số từ 0 đến 60!');
         }
     });
+}
+
+function initAutoShotCountButtons() {
+    if (!autoShotButtons || !autoShotButtons.length) return;
+
+    autoShotButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            autoShotButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Hide custom input when picking presets
+            if (customAutoShotInputWrapper) customAutoShotInputWrapper.classList.add('hidden');
+            if (autoShotOptionsCustomBtn) autoShotOptionsCustomBtn.classList.remove('active');
+
+            const count = parseInt(btn.dataset.count || '8', 10);
+            STATE.autoCaptureCount = Number.isFinite(count) ? Math.max(4, count) : 8;
+        });
+    });
+
+    // Custom button toggle
+    if (autoShotOptionsCustomBtn && customAutoShotInputWrapper) {
+        autoShotOptionsCustomBtn.addEventListener('click', () => {
+            autoShotButtons.forEach(b => b.classList.remove('active'));
+            autoShotOptionsCustomBtn.classList.add('active');
+            customAutoShotInputWrapper.classList.remove('hidden');
+            if (customAutoShotCountInput) customAutoShotCountInput.focus();
+        });
+    }
+
+    // Apply custom value
+    if (applyCustomAutoShotCountBtn && customAutoShotCountInput && customAutoShotInputWrapper) {
+        const applyValue = () => {
+            const raw = parseInt(customAutoShotCountInput.value, 10);
+            if (!Number.isFinite(raw) || raw < 4) {
+                alert('Vui lòng nhập số ảnh >= 4!');
+                return;
+            }
+            STATE.autoCaptureCount = raw;
+            customAutoShotInputWrapper.classList.add('hidden');
+            if (autoShotOptionsCustomBtn) autoShotOptionsCustomBtn.classList.add('active');
+            updateCaptureStatus(`Đang chụp tự động: ${STATE.autoCaptureCount} ảnh mỗi lần.`);
+        };
+
+        applyCustomAutoShotCountBtn.addEventListener('click', applyValue);
+        customAutoShotCountInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') applyValue();
+        });
+    }
+}
+
+function initPhotoSelectionMode() {
+    if (!photoSelectManualBtn || !photoSelectAutoBtn) return;
+
+    const setMode = (manual) => {
+        STATE.manualPickFourForFrame = manual;
+        photoSelectManualBtn.classList.toggle('active', manual);
+        photoSelectAutoBtn.classList.toggle('active', !manual);
+    };
+
+    photoSelectManualBtn.addEventListener('click', () => setMode(true));
+    photoSelectAutoBtn.addEventListener('click', () => setMode(false));
+
+    // Ensure initial state matches UI default
+    setMode(true);
 }
 
 // ===== BEAUTY FILTER TOGGLE =====
@@ -349,9 +449,7 @@ function initEventListeners() {
         }
     });
     captureBtn.addEventListener('click', startAutoCapture);
-    singleCaptureBtn.addEventListener('click', captureSinglePhoto);
     resetBtn.addEventListener('click', resetPhotos);
-    selectFrameBtn.addEventListener('click', openFrameModal);
     
     // Frame modal buttons
     const closeFrameBtn = document.getElementById('closeFrameModal');
@@ -373,6 +471,24 @@ function initEventListeners() {
         closeQRModal();
         resetPhotos();
     });
+
+    // Photo selection modal
+    if (closePhotoSelectModalBtn) {
+        closePhotoSelectModalBtn.addEventListener('click', () => {
+            photoSelectModal.classList.remove('active');
+        });
+    }
+    if (confirmPhotoSelectionBtn) {
+        confirmPhotoSelectionBtn.addEventListener('click', confirmPhotoSelection);
+    }
+
+    // Upload more photos from device into selection modal
+    if (addPhotoFromDeviceBtn && photoSelectUploadInput) {
+        addPhotoFromDeviceBtn.addEventListener('click', () => {
+            photoSelectUploadInput.click();
+        });
+        photoSelectUploadInput.addEventListener('change', handleModalUploadFiles);
+    }
 }
 
 // ===== CAMERA =====
@@ -464,37 +580,70 @@ function toggleFlip() {
     video.classList.toggle('flipped', STATE.isFlipped);
 }
 
+// Take a photo from the live video and return a dataURL (doesn't touch slots)
+async function takePhotoDataUrl() {
+    ctx.save();
+    
+    if (STATE.isFlipped) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+    }
+    
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    
+    if (STATE.beautyMode) {
+        applyBeautyFilter(ctx, canvas.width, canvas.height);
+    }
+    
+    return canvas.toDataURL('image/png');
+}
+
 // ===== AUTO CAPTURE =====
 async function startAutoCapture() {
     if (STATE.isCapturing) return;
     
     STATE.isCapturing = true;
     captureBtn.disabled = true;
+    if (photoSelectModal) photoSelectModal.classList.remove('active');
+    if (frameModal) frameModal.classList.remove('active');
+    STATE.photos = [null, null, null, null];
+    STATE.allPhotos = [];
+    STATE.shotsTaken = 0;
     
-    // Chụp 4 ảnh tự động
-    for (let i = 0; i < 4; i++) {
-        // Countdown
+    const totalShots = Math.max(4, STATE.autoCaptureCount || 4);
+    STATE.shotsTarget = totalShots;
+    updateShotCounter(true);
+    
+    for (let i = 0; i < totalShots; i++) {
         await doCountdown();
         
-        // Capture
-        await capturePhoto(i);
+        const photoDataUrl = await takePhotoDataUrl();
+        showFlash();
+        showCapturePreview(photoDataUrl, 650);
+        STATE.allPhotos.push(photoDataUrl);
+        STATE.shotsTaken = i + 1;
+        updateShotCounter(true);
         
-        // Wait before next photo (except last one)
-        if (i < 3) {
-            await sleep(1000);
+        if (i < totalShots - 1) {
+            await sleep(700);
         }
     }
     
     STATE.isCapturing = false;
     captureBtn.classList.add('hidden');
     resetBtn.classList.remove('hidden');
-    selectFrameBtn.classList.remove('hidden');
     
     updatePhotoCount();
+    updateShotCounter(false);
     updateButtons();
-    
-    // Tự động mở modal chọn frame
-    setTimeout(() => openFrameModal(), 500);
+
+    updateCaptureStatus(
+        `Đã chụp ${STATE.shotsTaken}/${STATE.shotsTarget} ảnh. Hãy chọn 4 ảnh đẹp nhất.`
+    );
+    if (photoSelectModal) photoSelectModal.classList.remove('active');
+    // Let the UI settle after capture
+    setTimeout(() => openPhotoSelectionModal(), 200);
 }
 
 async function doCountdown() {
@@ -513,31 +662,57 @@ async function doCountdown() {
 }
 
 async function capturePhoto(index) {
-    // Draw video to canvas
-    ctx.save();
+    const dataUrl = await takePhotoDataUrl();
+    STATE.photos[index] = dataUrl;
+    STATE.allPhotos.push(dataUrl);
+    renderPhotoSlot(index);
     
-    // Mirror image nếu FLIP (vì video đã flip rồi)
-    // Nếu không flip thì vẽ bình thường
-    if (STATE.isFlipped) {
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
+    updatePhotoCount();
+    updateButtons();
+}
+
+function updateShotCounter(show) {
+    if (!shotCounterOverlay || !shotCounterText) return;
+    if (show && STATE.shotsTarget > 0) {
+        shotCounterText.textContent = `${STATE.shotsTaken}/${STATE.shotsTarget}`;
+        shotCounterOverlay.classList.remove('hidden');
+    } else {
+        shotCounterOverlay.classList.add('hidden');
     }
-    
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    ctx.restore();
-    
-    // Apply beauty filter if enabled
-    if (STATE.beautyMode) {
-        applyBeautyFilter(ctx, canvas.width, canvas.height);
-    }
-    
-    // Save photo
-    STATE.photos[index] = canvas.toDataURL('image/png');
-    
-    // Update UI
+}
+
+function updateCaptureStatus(text) {
+    if (!captureStatusEl) return;
+    captureStatusEl.textContent = text;
+}
+
+function showFlash() {
+    if (!flashOverlay) return;
+    flashOverlay.classList.remove('hidden');
+    flashOverlay.classList.add('active');
+    setTimeout(() => {
+        flashOverlay.classList.remove('active');
+        flashOverlay.classList.add('hidden');
+    }, 180);
+}
+
+function showCapturePreview(dataUrl, durationMs = 650) {
+    if (!capturePreviewOverlay || !capturePreviewImg) return;
+    capturePreviewImg.src = dataUrl;
+    capturePreviewOverlay.classList.remove('hidden');
+
+    setTimeout(() => {
+        capturePreviewOverlay.classList.add('hidden');
+    }, durationMs);
+}
+
+function renderPhotoSlot(index) {
+    const dataUrl = STATE.photos[index];
     const slot = document.querySelector(`.photo-slot[data-index="${index}"]`);
+    if (!slot || !dataUrl) return;
+
     const img = document.createElement('img');
-    img.src = STATE.photos[index];
+    img.src = dataUrl;
     slot.innerHTML = '';
     slot.appendChild(img);
     slot.classList.add('filled');
@@ -575,14 +750,14 @@ async function capturePhoto(index) {
     // Attach upload events
     uploadBtn.addEventListener('click', () => uploadInput.click());
     uploadInput.addEventListener('change', (e) => handlePhotoUpload(e, index));
-    
-    updatePhotoCount();
-    updateButtons();
 }
+
+    // (slot rendering moved to renderPhotoSlot)
 
 // ===== RESET =====
 function resetPhotos() {
     STATE.photos = [null, null, null, null];
+    STATE.allPhotos = [];
     STATE.selectedFrame = null;
     STATE.finalImage = null;
     
@@ -610,17 +785,27 @@ function resetPhotos() {
     
     updatePhotoCount();
     updateButtons();
+    updateCaptureStatus('Chưa chụp');
+    STATE.shotsTaken = 0;
+    STATE.shotsTarget = 0;
+    updateShotCounter(false);
     
     captureBtn.classList.remove('hidden');
     captureBtn.disabled = false;
-    singleCaptureBtn.classList.add('hidden');
     resetBtn.classList.add('hidden');
-    selectFrameBtn.classList.add('hidden');
+
+    if (photoSelectModal) {
+        photoSelectModal.classList.remove('active');
+    }
 }
 
 function updatePhotoCount() {
-    const count = STATE.photos.filter(p => p !== null).length;
-    photoCount.textContent = `${count}/4`;
+    const totalShots = STATE.allPhotos.length;
+    if (totalShots > 0) {
+        photoCount.textContent = `${totalShots} ảnh đã chụp`;
+    } else {
+        photoCount.textContent = '0 ảnh';
+    }
 }
 
 // ===== FRAMES =====
@@ -631,6 +816,7 @@ function loadFramePositions() {
 let currentPreviewFrame = null;
 
 function loadFrames() {
+    if (!frameGrid) return;
     const frames = [
         { name: 'Frame 4', path: './Frames/Frame4.png' }
     ];
@@ -684,7 +870,9 @@ async function createFramedImage(framePath) {
     }
     
     const frameImg = await loadImageSafe(framePath);
-    const photosToUse = STATE.photos.filter(p => p !== null).slice(0, config.positions.length);
+    const photosToUse = STATE.photos
+        .filter(p => p !== null)
+        .slice(0, config.positions.length);
     if (photosToUse.length === 0) {
         throw new Error('Không có ảnh nào!');
     }
@@ -1100,6 +1288,7 @@ function deletePhoto(index) {
     
     STATE.photos[index] = null;
     
+    
     // Update UI
     const slot = document.querySelector(`.photo-slot[data-index="${index}"]`);
     slot.classList.remove('filled');
@@ -1174,28 +1363,10 @@ function swapPhotos(fromIndex, toIndex) {
     
     // Update both slots
     [fromIndex, toIndex].forEach(index => {
-        const slot = document.querySelector(`.photo-slot[data-index="${index}"]`);
         if (STATE.photos[index]) {
-            const img = document.createElement('img');
-            img.src = STATE.photos[index];
-            slot.innerHTML = '';
-            slot.appendChild(img);
-            slot.classList.add('filled');
-            
-            // Re-add buttons
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-photo-btn';
-            deleteBtn.dataset.index = index;
-            deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-            deleteBtn.addEventListener('click', () => deletePhoto(index));
-            slot.appendChild(deleteBtn);
-            
-            const swapBtn = document.createElement('button');
-            swapBtn.className = 'swap-photo-btn';
-            swapBtn.dataset.index = index;
-            swapBtn.innerHTML = '<i class="fas fa-arrows-rotate"></i>';
-            swapBtn.addEventListener('click', () => openSwapModal(index));
-            slot.appendChild(swapBtn);
+            renderPhotoSlot(index);
+        } else {
+            deletePhoto(index);
         }
     });
     
@@ -1212,7 +1383,7 @@ async function captureSinglePhoto() {
     singleCaptureBtn.disabled = true;
     
     if (STATE.countdownTime > 0) {
-        await showCountdown();
+        await doCountdown();
     }
     
     await capturePhoto(emptyIndex);
@@ -1222,32 +1393,142 @@ async function captureSinglePhoto() {
 }
 
 function updateButtons() {
-    const photosFilled = STATE.photos.filter(p => p !== null).length;
-    const totalSlots = STATE.photos.length;
-    const hasEmptySlots = photosFilled < totalSlots;
-    
-    // Show/hide single capture button if there are empty slots after initial capture
-    if (hasEmptySlots && photosFilled > 0) {
-        singleCaptureBtn.classList.remove('hidden');
-    } else {
-        singleCaptureBtn.classList.add('hidden');
-    }
-    
-    // Show select frame button when all required photos are taken
-    if (photosFilled === totalSlots) {
-        selectFrameBtn.classList.remove('hidden');
-        captureBtn.classList.add('hidden');
-        singleCaptureBtn.classList.add('hidden');
-    } else {
-        selectFrameBtn.classList.add('hidden');
-    }
-    
-    // Show/hide reset button
-    if (photosFilled > 0) {
+    const anyShots = STATE.allPhotos.length > 0;
+
+    // Show/hide reset button based on whether there is any photo in the session
+    if (anyShots) {
         resetBtn.classList.remove('hidden');
     } else {
         resetBtn.classList.add('hidden');
     }
+}
+
+// ===== PHOTO SELECTION MODAL (CHOOSE 4 FROM MANY) =====
+function openPhotoSelectionModal() {
+    if (!photoSelectModal || !photoSelectGrid) return;
+    if (!STATE.allPhotos.length) return;
+
+    photoSelectGrid.innerHTML = '';
+
+    STATE.allPhotos.forEach((dataUrl, index) => {
+        const item = document.createElement('div');
+        item.className = 'photo-select-item';
+        item.dataset.index = index.toString();
+
+        const img = document.createElement('img');
+        img.src = dataUrl;
+
+        const label = document.createElement('div');
+        label.className = 'photo-select-checkbox';
+        label.textContent = 'Chọn';
+
+        item.appendChild(img);
+        item.appendChild(label);
+
+        item.addEventListener('click', () => {
+            const currentlySelected = Array.from(
+                photoSelectGrid.querySelectorAll('.photo-select-item.selected')
+            );
+
+            if (item.classList.contains('selected')) {
+                item.classList.remove('selected');
+                label.textContent = 'Chọn';
+            } else {
+                if (currentlySelected.length >= 4) {
+                    alert('Chỉ chọn tối đa 4 ảnh để in khung!');
+                    return;
+                }
+                item.classList.add('selected');
+                label.textContent = 'Đã chọn';
+            }
+        });
+
+        photoSelectGrid.appendChild(item);
+    });
+
+    photoSelectModal.classList.add('active');
+    updatePhotoCount();
+}
+
+async function confirmPhotoSelection() {
+    if (!photoSelectModal || !photoSelectGrid) return;
+
+    const selectedItems = Array.from(
+        photoSelectGrid.querySelectorAll('.photo-select-item.selected')
+    );
+
+    if (selectedItems.length !== 4) {
+        alert('Vui lòng chọn đúng 4 ảnh để in khung!');
+        return;
+    }
+
+    // Map selected indices back to data URLs
+    const chosen = selectedItems
+        .map(item => parseInt(item.dataset.index))
+        .map(i => STATE.allPhotos[i])
+        .filter(Boolean);
+
+    // Put chosen photos into the 4 visible slots
+    STATE.photos = [null, null, null, null];
+    chosen.forEach((dataUrl, i) => {
+        STATE.photos[i] = dataUrl;
+        renderPhotoSlot(i);
+    });
+
+    photoSelectModal.classList.remove('active');
+
+    updatePhotoCount();
+    updateButtons();
+
+    // Auto generate final image with default frame (Frame4)
+    const selectedFramePath = './Frames/Frame4.png';
+    STATE.selectedFrame = selectedFramePath;
+
+    // Show loading
+    const loading = document.createElement('div');
+    loading.style.cssText =
+        'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 10px; z-index: 9999; font-size: 18px;';
+    loading.textContent = '⏳ Đang xử lý...';
+    document.body.appendChild(loading);
+
+    try {
+        STATE.finalImage = await createFramedImage(selectedFramePath);
+        document.body.removeChild(loading);
+        showQRCode();
+    } catch (error) {
+        if (document.body.contains(loading)) {
+            document.body.removeChild(loading);
+        }
+        console.error('Frame generation error:', error);
+        alert('Lỗi khi xử lý ảnh: ' + error.message);
+    }
+}
+
+async function handleModalUploadFiles(event) {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+
+    for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+
+        const reader = new FileReader();
+        const dataUrl = await new Promise((resolve, reject) => {
+            reader.onload = e => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        STATE.allPhotos.push(dataUrl);
+    }
+
+    // Reset input
+    event.target.value = '';
+
+    updatePhotoCount();
+    updateCaptureStatus(`Đã chụp ${STATE.allPhotos.length} ảnh (bao gồm ảnh tải lên). Hãy chọn 4 ảnh đẹp nhất.`);
+
+    // Rebuild modal grid to include newly added photos
+    openPhotoSelectionModal();
 }
 
 // ===== UPLOAD PHOTO =====
@@ -1255,6 +1536,7 @@ function initUploadButtons() {
     document.querySelectorAll('.upload-photo-btn').forEach(btn => {
         const index = parseInt(btn.dataset.index);
         const input = document.querySelector(`.photo-upload-input[data-index="${index}"]`);
+        if (!input) return;
         
         btn.addEventListener('click', () => input.click());
         input.addEventListener('change', (e) => handlePhotoUpload(e, index));
@@ -1308,6 +1590,7 @@ async function handlePhotoUpload(event, index) {
             // Save cropped image
             const croppedData = cropCanvas.toDataURL('image/png');
             STATE.photos[index] = croppedData;
+            STATE.allPhotos.push(croppedData);
             
             // Update UI
             const slot = document.querySelector(`.photo-slot[data-index="${index}"]`);
