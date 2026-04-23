@@ -2,7 +2,7 @@
 const FormData = require('form-data');
 const fetch = require('node-fetch');
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -71,3 +71,13 @@ module.exports = async function handler(req, res) {
         });
     }
 }
+
+module.exports = handler;
+
+module.exports.config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '10mb'
+        }
+    }
+};

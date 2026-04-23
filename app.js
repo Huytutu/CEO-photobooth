@@ -1067,14 +1067,14 @@ async function showQRCode() {
         // Check if response is JSON
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-            throw new Error('Server đang bảo trì hoặc không có kết nối');
-        }
-
-        if (!response.ok) {
-            throw new Error(`Server lỗi (${response.status})`);
+            throw new Error(`Server đang bảo trì hoặc không có kết nối (${response.status})`);
         }
 
         const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(`Server lỗi ${response.status}: ${data.error || 'Unknown'}`);
+        }
 
         if (data.success && data.url) {
             const imageUrl = data.url;
