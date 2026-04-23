@@ -160,6 +160,14 @@
               <span>4</span>
             </button>
             <button
+              class="timer-btn auto-shot-btn"
+              data-count="6"
+              type="button"
+            >
+              <i class="fas fa-camera-retro"></i>
+              <span>6</span>
+            </button>
+            <button
               class="timer-btn auto-shot-btn active"
               data-count="8"
               type="button"
@@ -288,7 +296,7 @@
     <div id="photoSelectModal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
-          <h2><i class="fas fa-check-square"></i> Chọn 4 Ảnh Để In Khung</h2>
+          <h2><i class="fas fa-check-square"></i> Chọn <span id="photoSelectCountTitle">4</span> Ảnh Để In Khung</h2>
           <button class="modal-close" id="closePhotoSelectModal">
             &times;
           </button>
@@ -296,7 +304,7 @@
         <div class="photo-select-body">
           <p style="margin-bottom: 10px">
             Đã chụp nhiều ảnh. Hãy chọn
-            <strong>tối đa 4 ảnh đẹp nhất</strong> để đưa vào khung.
+            <strong>đúng <span id="photoSelectCountSub">4</span> ảnh đẹp nhất</strong> để đưa vào khung.
           </p>
           <div id="photoSelectGrid" class="photo-select-grid">
             <!-- filled dynamically -->
@@ -314,7 +322,7 @@
             style="display: none"
           />
           <button id="confirmPhotoSelectionBtn" class="btn btn-success">
-            <i class="fas fa-check"></i> Xác Nhận 4 Ảnh
+            <i class="fas fa-check"></i> Xác Nhận <span id="photoSelectCountBtn">4</span> Ảnh
           </button>
         </div>
       </div>

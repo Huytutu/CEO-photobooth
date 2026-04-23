@@ -15,7 +15,8 @@ const STATE = {
     manualPickFourForFrame: true,
     isCapturing: false,
     isFlipped: true,
-    selectedFrame: null,
+    selectedFrame: './Frames/Frame4.png',
+    requiredPhotos: 4,
     finalImage: null,
     selectedDeviceId: null
 };
@@ -23,74 +24,74 @@ const STATE = {
 
 
 let FRAME_POSITIONS = {
-  "./Frames/Frame1.png": {
-    "photoSize": {
-      "width": 780,
-      "height": 575
+    "./Frames/Frame1.png": {
+        "photoSize": {
+            "width": 780,
+            "height": 575
+        },
+        "positions": [
+            {
+                "x": 48,
+                "y": 668,
+                "centerX": false
+            },
+            {
+                "x": 48,
+                "y": 1281,
+                "centerX": false
+            },
+            {
+                "x": 52,
+                "y": 1900,
+                "centerX": false
+            }
+        ]
     },
-    "positions": [
-      {
-        "x": 48,
-        "y": 668,
-        "centerX": false
-      },
-      {
-        "x": 48,
-        "y": 1281,
-        "centerX": false
-      },
-      {
-        "x": 52,
-        "y": 1900,
-        "centerX": false
-      }
-    ]
-  },
-  "./Frames/Frame2.png": {
-    "photoSize": {
-      "width": 780,
-      "height": 562
+    "./Frames/Frame2.png": {
+        "photoSize": {
+            "width": 780,
+            "height": 562
+        },
+        "positions": [
+            {
+                "x": 48,
+                "y": 681,
+                "centerX": false
+            },
+            {
+                "x": 48,
+                "y": 1291,
+                "centerX": false
+            },
+            {
+                "x": 52,
+                "y": 1900,
+                "centerX": false
+            }
+        ]
     },
-    "positions": [
-      {
-        "x": 48,
-        "y": 681,
-        "centerX": false
-      },
-      {
-        "x": 48,
-        "y": 1291,
-        "centerX": false
-      },
-      {
-        "x": 52,
-        "y": 1900,
-        "centerX": false
-      }
-    ]
-  },
-  "./Frames/Frame3.png": {
-    "photoSize": {
-      "width": 789,
-      "height": 489
-    },
-    "positions": [
-      {
-        "x": 46,
-        "y": 715,
-        "centerX": false
-      },
-      {
-        "x": 47,
-        "y": 1327,
-        "centerX": false
-      },
-      {
-        "x": 46,
-        "y": 1940,
-        "centerX": false
-      }
-    ]
+    "./Frames/Frame3.png": {
+        "photoSize": {
+            "width": 789,
+            "height": 489
+        },
+        "positions": [
+            {
+                "x": 46,
+                "y": 715,
+                "centerX": false
+            },
+            {
+                "x": 47,
+                "y": 1327,
+                "centerX": false
+            },
+            {
+                "x": 46,
+                "y": 1940,
+                "centerX": false
+            }
+        ]
     },
     "./Frames/Frame4.png": {
         "photoSize": {
@@ -119,7 +120,35 @@ let FRAME_POSITIONS = {
                 "centerX": false
             }
         ]
-  }
+    },
+    "./Frames/HoLive.png": {
+        "photoSize": {
+            "width": 690,
+            "height": 440
+        },
+        "drawPhotosOnTop": true,
+        "positions": [
+            { "x": 120, "y": 620, "photoIndex": 0, "centerX": false },
+            { "x": 120, "y": 1100, "photoIndex": 1, "centerX": false },
+            { "x": 120, "y": 1570, "photoIndex": 2, "centerX": false },
+            { "x": 850, "y": 620, "photoIndex": 3, "centerX": false },
+            { "x": 850, "y": 1100, "photoIndex": 4, "centerX": false },
+            { "x": 850, "y": 1570, "photoIndex": 5, "centerX": false }
+        ]
+    },
+    "./Frames/HolaRadio.png": {
+        "photoSize": {
+            "width": 640,
+            "height": 410
+        },
+        "drawPhotosOnTop": true,
+        "positions": [
+            { "x": 90, "y": 140, "photoIndex": 0, "centerX": false },
+            { "x": 90, "y": 590, "photoIndex": 1, "centerX": false },
+            { "x": 90, "y": 1050, "photoIndex": 2, "centerX": false },
+            { "x": 90, "y": 1510, "photoIndex": 3, "centerX": false }
+        ]
+    }
 };
 
 // ===== DOM ELEMENTS =====
@@ -209,7 +238,7 @@ function initTimerButtons() {
     const timerButtons = countdownContainer.querySelectorAll('.timer-btn:not(.timer-btn-custom)');
     const customTimerBtn = document.getElementById('customTimerBtn');
     const customTimerInput = document.getElementById('customTimerInput');
-    
+
     timerButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             timerButtons.forEach(b => b.classList.remove('active'));
@@ -220,7 +249,7 @@ function initTimerButtons() {
             customTimerInput.classList.add('hidden');
         });
     });
-    
+
     // Custom timer button toggle
     customTimerBtn.addEventListener('click', () => {
         customTimerInput.classList.toggle('hidden');
@@ -311,16 +340,16 @@ function initPhotoSelectionMode() {
 function initBeautyToggle() {
     const beautyOnBtn = document.getElementById('beautyOnBtn');
     const beautyOffBtn = document.getElementById('beautyOffBtn');
-    
+
     if (!beautyOnBtn || !beautyOffBtn) return;
-    
+
     beautyOnBtn.addEventListener('click', () => {
         STATE.beautyMode = true;
         beautyOnBtn.classList.add('active');
         beautyOffBtn.classList.remove('active');
         applyVideoFilter(); // Apply filter to live video
     });
-    
+
     beautyOffBtn.addEventListener('click', () => {
         STATE.beautyMode = false;
         beautyOffBtn.classList.add('active');
@@ -332,7 +361,7 @@ function initBeautyToggle() {
 // Apply beauty filter to live video preview
 function applyVideoFilter() {
     if (!video) return;
-    
+
     if (STATE.beautyMode) {
         // Apply CSS filters for real-time beauty effect (subtle glow)
         video.style.filter = 'brightness(1.08) contrast(0.97) saturate(1.08)';
@@ -345,17 +374,17 @@ function applyVideoFilter() {
 function applyBeautyFilter(ctx, width, height) {
     const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
-    
+
     // Create skin mask
     const skinMask = new Uint8Array(width * height);
-    
+
     // Detect skin pixels
     for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
         const idx = i / 4;
-        
+
         // Skin detection algorithm (improved)
         const isSkin = (
             r > 95 && g > 40 && b > 20 &&
@@ -365,34 +394,34 @@ function applyBeautyFilter(ctx, width, height) {
             (r - b) > 15 &&
             r < 250 // Avoid white
         );
-        
+
         skinMask[idx] = isSkin ? 1 : 0;
     }
-    
+
     // Apply gentle selective blur only to skin (radius 1 for subtle effect)
     const blurredData = selectiveBlur(imageData, skinMask, width, height, 1);
-    
+
     // Blend and enhance
     for (let i = 0; i < data.length; i += 4) {
         const idx = i / 4;
-        
+
         if (skinMask[idx]) {
             // Gentle blend (50% for subtle smoothing without losing detail)
             data[i] = data[i] * 0.5 + blurredData[i] * 0.5;
             data[i + 1] = data[i + 1] * 0.5 + blurredData[i + 1] * 0.5;
             data[i + 2] = data[i + 2] * 0.5 + blurredData[i + 2] * 0.5;
-            
+
             // Brighten skin more for glowing effect
             data[i] = Math.min(255, data[i] * 1.10);
             data[i + 1] = Math.min(255, data[i + 1] * 1.08);
             data[i + 2] = Math.min(255, data[i + 2] * 1.06);
-            
+
             // Add peachy tone for healthy glow
             data[i] = Math.min(255, data[i] + 5);
             data[i + 1] = Math.min(255, data[i + 1] + 3);
         }
     }
-    
+
     ctx.putImageData(imageData, 0, 0);
 }
 
@@ -401,20 +430,20 @@ function selectiveBlur(imageData, mask, width, height, radius) {
     const data = imageData.data;
     const output = new Uint8ClampedArray(data.length);
     output.set(data); // Copy original
-    
+
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             const idx = y * width + x;
-            
+
             // Only blur masked pixels (skin)
             if (mask[idx]) {
                 let r = 0, g = 0, b = 0, count = 0;
-                
+
                 for (let dy = -radius; dy <= radius; dy++) {
                     for (let dx = -radius; dx <= radius; dx++) {
                         const nx = x + dx;
                         const ny = y + dy;
-                        
+
                         if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                             const nidx = (ny * width + nx) * 4;
                             r += data[nidx];
@@ -424,7 +453,7 @@ function selectiveBlur(imageData, mask, width, height, radius) {
                         }
                     }
                 }
-                
+
                 const pixelIdx = idx * 4;
                 output[pixelIdx] = r / count;
                 output[pixelIdx + 1] = g / count;
@@ -432,7 +461,7 @@ function selectiveBlur(imageData, mask, width, height, radius) {
             }
         }
     }
-    
+
     return output;
 }
 
@@ -450,21 +479,21 @@ function initEventListeners() {
     });
     captureBtn.addEventListener('click', startAutoCapture);
     resetBtn.addEventListener('click', resetPhotos);
-    
+
     // Frame modal buttons
     const closeFrameBtn = document.getElementById('closeFrameModal');
     const confirmFrameBtn = document.getElementById('confirmFrameBtn');
     if (closeFrameBtn) closeFrameBtn.addEventListener('click', closeFrameModal);
     if (confirmFrameBtn) confirmFrameBtn.addEventListener('click', selectFrame);
-    
+
     // Swap modal buttons
     const closeSwapBtn = document.getElementById('closeSwapModal');
     if (closeSwapBtn) closeSwapBtn.addEventListener('click', closeSwapModal);
-    
+
     // QR modal buttons
     closeQrModal.addEventListener('click', closeQRModal);
     downloadDirectBtn.addEventListener('click', downloadImage);
-    
+
     // Other buttons
     flipBtn.addEventListener('click', toggleFlip);
     newPhotoBtn.addEventListener('click', () => {
@@ -496,15 +525,15 @@ async function startCamera(deviceId = null) {
     try {
         // Stop existing stream first
         stopCamera();
-        
+
         const constraints = {
-            video: { 
-                width: { ideal: 1280 }, 
+            video: {
+                width: { ideal: 1280 },
                 height: { ideal: 960 },
                 frameRate: { ideal: 30, max: 30 }
             }
         };
-        
+
         // If deviceId is provided, use exact device
         if (deviceId) {
             constraints.video.deviceId = { exact: deviceId };
@@ -512,14 +541,14 @@ async function startCamera(deviceId = null) {
             // Default to user-facing camera
             constraints.video.facingMode = 'user';
         }
-        
+
         STATE.stream = await navigator.mediaDevices.getUserMedia(constraints);
-        
+
         video.srcObject = STATE.stream;
-        
+
         // Apply flip by default
         video.classList.add('flipped');
-        
+
         // Wait for video to be ready
         await new Promise((resolve) => {
             video.onloadedmetadata = () => {
@@ -529,20 +558,20 @@ async function startCamera(deviceId = null) {
                 resolve();
             };
         });
-        
+
         // Apply beauty filter if enabled
         applyVideoFilter();
-        
+
         startBtn.classList.add('hidden');
         captureBtn.classList.remove('hidden');
         flipBtn.classList.remove('hidden');
-        
+
         return true;
-        
+
     } catch (error) {
         console.error('Camera error:', error);
         let errorMsg = 'Không thể truy cập camera!\n\n';
-        
+
         if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
             errorMsg += '❌ Bạn đã từ chối quyền truy cập camera.\n\n';
             errorMsg += '✅ Giải pháp:\n';
@@ -562,7 +591,7 @@ async function startCamera(deviceId = null) {
         } else {
             errorMsg += '❌ Lỗi: ' + error.message;
         }
-        
+
         alert(errorMsg);
         return false;
     }
@@ -583,26 +612,26 @@ function toggleFlip() {
 // Take a photo from the live video and return a dataURL (doesn't touch slots)
 async function takePhotoDataUrl() {
     ctx.save();
-    
+
     if (STATE.isFlipped) {
         ctx.translate(canvas.width, 0);
         ctx.scale(-1, 1);
     }
-    
+
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     ctx.restore();
-    
+
     if (STATE.beautyMode) {
         applyBeautyFilter(ctx, canvas.width, canvas.height);
     }
-    
+
     return canvas.toDataURL('image/png');
 }
 
 // ===== AUTO CAPTURE =====
 async function startAutoCapture() {
     if (STATE.isCapturing) return;
-    
+
     STATE.isCapturing = true;
     captureBtn.disabled = true;
     if (photoSelectModal) photoSelectModal.classList.remove('active');
@@ -610,54 +639,54 @@ async function startAutoCapture() {
     STATE.photos = [null, null, null, null];
     STATE.allPhotos = [];
     STATE.shotsTaken = 0;
-    
+
     const totalShots = Math.max(4, STATE.autoCaptureCount || 4);
     STATE.shotsTarget = totalShots;
     updateShotCounter(true);
-    
+
     for (let i = 0; i < totalShots; i++) {
         await doCountdown();
-        
+
         const photoDataUrl = await takePhotoDataUrl();
         showFlash();
         showCapturePreview(photoDataUrl, 650);
         STATE.allPhotos.push(photoDataUrl);
         STATE.shotsTaken = i + 1;
         updateShotCounter(true);
-        
+
         if (i < totalShots - 1) {
             await sleep(700);
         }
     }
-    
+
     STATE.isCapturing = false;
     captureBtn.classList.add('hidden');
     resetBtn.classList.remove('hidden');
-    
+
     updatePhotoCount();
     updateShotCounter(false);
     updateButtons();
 
     updateCaptureStatus(
-        `Đã chụp ${STATE.shotsTaken}/${STATE.shotsTarget} ảnh. Hãy chọn 4 ảnh đẹp nhất.`
+        `Đã chụp xong. Vui lòng chọn khung ảnh.`
     );
     if (photoSelectModal) photoSelectModal.classList.remove('active');
-    // Let the UI settle after capture
-    setTimeout(() => openPhotoSelectionModal(), 200);
+    // Mở modal chọn khung trước
+    setTimeout(() => openFrameModal(), 200);
 }
 
 async function doCountdown() {
     if (STATE.countdownTime === 0) return;
-    
+
     countdown.classList.remove('hidden');
-    
+
     for (let i = STATE.countdownTime; i > 0; i--) {
         countdownNumber.textContent = i;
         countdownNumber.style.animation = 'none';
         setTimeout(() => countdownNumber.style.animation = 'pulse 0.5s ease-in-out', 10);
         await sleep(1000);
     }
-    
+
     countdown.classList.add('hidden');
 }
 
@@ -666,7 +695,7 @@ async function capturePhoto(index) {
     STATE.photos[index] = dataUrl;
     STATE.allPhotos.push(dataUrl);
     renderPhotoSlot(index);
-    
+
     updatePhotoCount();
     updateButtons();
 }
@@ -716,7 +745,7 @@ function renderPhotoSlot(index) {
     slot.innerHTML = '';
     slot.appendChild(img);
     slot.classList.add('filled');
-    
+
     // Re-add upload, delete and swap buttons
     const uploadBtn = document.createElement('button');
     uploadBtn.className = 'upload-photo-btn';
@@ -724,21 +753,21 @@ function renderPhotoSlot(index) {
     uploadBtn.innerHTML = '<i class="fas fa-upload"></i>';
     uploadBtn.title = 'Tải ảnh lên';
     slot.appendChild(uploadBtn);
-    
+
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'delete-photo-btn';
     deleteBtn.dataset.index = index;
     deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
     deleteBtn.addEventListener('click', () => deletePhoto(index));
     slot.appendChild(deleteBtn);
-    
+
     const swapBtn = document.createElement('button');
     swapBtn.className = 'swap-photo-btn';
     swapBtn.dataset.index = index;
     swapBtn.innerHTML = '<i class="fas fa-arrows-rotate"></i>';
     swapBtn.addEventListener('click', () => openSwapModal(index));
     slot.appendChild(swapBtn);
-    
+
     const uploadInput = document.createElement('input');
     uploadInput.type = 'file';
     uploadInput.className = 'photo-upload-input';
@@ -746,13 +775,13 @@ function renderPhotoSlot(index) {
     uploadInput.accept = 'image/*';
     uploadInput.style.display = 'none';
     slot.appendChild(uploadInput);
-    
+
     // Attach upload events
     uploadBtn.addEventListener('click', () => uploadInput.click());
     uploadInput.addEventListener('change', (e) => handlePhotoUpload(e, index));
 }
 
-    // (slot rendering moved to renderPhotoSlot)
+// (slot rendering moved to renderPhotoSlot)
 
 // ===== RESET =====
 function resetPhotos() {
@@ -760,7 +789,7 @@ function resetPhotos() {
     STATE.allPhotos = [];
     STATE.selectedFrame = null;
     STATE.finalImage = null;
-    
+
     document.querySelectorAll('.photo-slot').forEach((slot, index) => {
         slot.classList.remove('filled');
         slot.innerHTML = `
@@ -778,18 +807,18 @@ function resetPhotos() {
             <input type="file" class="photo-upload-input" data-index="${index}" accept="image/*" style="display: none;">
         `;
     });
-    
+
     // Re-attach event listeners
     initPhotoSlotButtons();
     initUploadButtons();
-    
+
     updatePhotoCount();
     updateButtons();
     updateCaptureStatus('Chưa chụp');
     STATE.shotsTaken = 0;
     STATE.shotsTarget = 0;
     updateShotCounter(false);
-    
+
     captureBtn.classList.remove('hidden');
     captureBtn.disabled = false;
     resetBtn.classList.add('hidden');
@@ -818,11 +847,13 @@ let currentPreviewFrame = null;
 function loadFrames() {
     if (!frameGrid) return;
     const frames = [
-        { name: 'Frame 4', path: './Frames/Frame4.png' }
+        { name: 'Basic', path: './Frames/Frame4.png' },
+        { name: 'HoLive', path: './Frames/HoLive.png' },
+        { name: 'HolaRadio', path: './Frames/HolaRadio.png' }
     ];
-    
+
     frameGrid.innerHTML = '';
-    
+
     frames.forEach(frame => {
         const item = document.createElement('div');
         item.className = 'frame-item';
@@ -836,7 +867,7 @@ function loadFrames() {
             document.querySelectorAll('.frame-item').forEach(el => el.classList.remove('selected'));
             item.classList.add('selected');
             currentPreviewFrame = frame.path;
-            
+
             // Generate preview
             generateFramePreview(frame.path);
         });
@@ -846,13 +877,13 @@ function loadFrames() {
 
 async function generateFramePreview(framePath) {
     const previewContainer = document.getElementById('framePreview');
-    
+
     // Show loading
     previewContainer.innerHTML = '<p style="color: #666;">⏳ Đang tạo preview...</p>';
-    
+
     try {
-        const previewDataUrl = await createFramedImage(framePath);
-        
+        const previewDataUrl = await createFramedImage(framePath, true);
+
         const img = document.createElement('img');
         img.src = previewDataUrl;
         previewContainer.innerHTML = '';
@@ -863,56 +894,62 @@ async function generateFramePreview(framePath) {
     }
 }
 
-async function createFramedImage(framePath) {
+async function createFramedImage(framePath, isPreview = false) {
     const config = FRAME_POSITIONS[framePath];
     if (!config) {
         throw new Error('Frame chưa có cấu hình vị trí! Path: ' + framePath);
     }
-    
+
     const frameImg = await loadImageSafe(framePath);
-    const photosToUse = STATE.photos
-        .filter(p => p !== null)
-        .slice(0, config.positions.length);
-    if (photosToUse.length === 0) {
-        throw new Error('Không có ảnh nào!');
+    let photosToUse = STATE.photos.filter(p => p !== null);
+
+    if (isPreview && photosToUse.length === 0) {
+        const maxIndex = Math.max(...config.positions.map((p, i) => p.photoIndex !== undefined ? p.photoIndex : i));
+        photosToUse = STATE.allPhotos.slice(0, maxIndex + 1);
     }
-    
+
     const photoImages = await Promise.all(
         photosToUse.map(photoData => loadImageSafe(photoData))
     );
-    
+
     const canvas = document.createElement('canvas');
     const maxWidth = 1200;
     const scale = frameImg.width > maxWidth ? maxWidth / frameImg.width : 1;
-    
+
     canvas.width = frameImg.width * scale;
     canvas.height = frameImg.height * scale;
     const ctx = canvas.getContext('2d');
-    
+
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    photoImages.forEach((photoImg, index) => {
-        if (index >= config.positions.length) return;
-        
-        const pos = config.positions[index];
+
+    if (config.drawPhotosOnTop) {
+        ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+    }
+
+    config.positions.forEach((pos, i) => {
+        const photoIdx = pos.photoIndex !== undefined ? pos.photoIndex : i;
+        if (photoIdx >= photoImages.length) return;
+
+        const photoImg = photoImages[photoIdx];
+        if (!photoImg) return;
         const size = config.photoSize;
-        
+
         let x = pos.x * scale;
         if (pos.centerX) {
             x = (canvas.width - size.width * scale) / 2;
         }
-        
+
         const scaleX = (size.width * scale) / photoImg.width;
         const scaleY = (size.height * scale) / photoImg.height;
         const imgScale = Math.max(scaleX, scaleY);
-        
+
         const scaledWidth = photoImg.width * imgScale;
         const scaledHeight = photoImg.height * imgScale;
-        
+
         const offsetX = (scaledWidth - size.width * scale) / 2;
         const offsetY = (scaledHeight - size.height * scale) / 2;
-        
+
         ctx.save();
         ctx.beginPath();
         ctx.rect(x, pos.y * scale, size.width * scale, size.height * scale);
@@ -920,15 +957,17 @@ async function createFramedImage(framePath) {
         ctx.drawImage(photoImg, x - offsetX, pos.y * scale - offsetY, scaledWidth, scaledHeight);
         ctx.restore();
     });
-    
-    ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-    
+
+    if (!config.drawPhotosOnTop) {
+        ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
+    }
+
     return canvas.toDataURL('image/jpeg', 0.75);
 }
 
 function openFrameModal() {
     frameModal.classList.add('active');
-    
+
     // Auto-select Frame4 by default
     setTimeout(() => {
         const defaultFrame = document.querySelector('.frame-item[data-frame-path="./Frames/Frame4.png"]');
@@ -955,27 +994,17 @@ async function selectFrame(framePath) {
 
     STATE.selectedFrame = selectedFramePath;
     closeFrameModal();
-    
-    // Show loading
-    const loading = document.createElement('div');
-    loading.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 10px; z-index: 9999; font-size: 18px;';
-    loading.textContent = '⏳ Đang xử lý...';
-    document.body.appendChild(loading);
-    
-    try {
-        // Tạo ảnh cuối với khung đã chọn
-        STATE.finalImage = await createFramedImage(selectedFramePath);
 
-        document.body.removeChild(loading);
-        // Hiển thị QR ngay sau khi xử lý ảnh
-        showQRCode();
-    } catch (error) {
-        if (document.body.contains(loading)) {
-            document.body.removeChild(loading);
-        }
-        console.error('Frame selection error:', error);
-        alert('Lỗi khi xử lý ảnh: ' + error.message);
+    const config = FRAME_POSITIONS[selectedFramePath];
+    if (config) {
+        const maxIndex = Math.max(...config.positions.map((p, i) => p.photoIndex !== undefined ? p.photoIndex : i));
+        STATE.requiredPhotos = maxIndex + 1;
+    } else {
+        STATE.requiredPhotos = 4;
     }
+
+    // Bây giờ mở modal chọn ảnh với số lượng tương ứng
+    setTimeout(() => openPhotoSelectionModal(), 200);
 }
 
 // Helper function to load image safely
@@ -993,7 +1022,7 @@ function loadImageSafe(src) {
 async function uploadWithTimeout(url, options, timeout = 10000) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
-    
+
     try {
         const response = await fetch(url, {
             ...options,
@@ -1015,42 +1044,42 @@ async function showQRCode() {
         alert('Không có ảnh để hiển thị!');
         return;
     }
-    
+
     qrModal.classList.add('active');
-    
+
     const previewImg = document.getElementById('finalImagePreview');
     if (previewImg) {
         previewImg.src = STATE.finalImage;
     }
-    
+
     const qrcodeContainer = document.getElementById('qrcode');
     qrcodeContainer.innerHTML = '<p style="color: #667eea; font-weight: 600;"><i class="fas fa-spinner fa-spin"></i> Đang upload ảnh...</p>';
-    
+
     try {
         const base64Data = STATE.finalImage.split(',')[1];
-        
+
         const response = await uploadWithTimeout('/api/upload', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ image: base64Data })
         }, 10000);
-        
+
         // Check if response is JSON
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             throw new Error('Server đang bảo trì hoặc không có kết nối');
         }
-        
+
         if (!response.ok) {
             throw new Error(`Server lỗi (${response.status})`);
         }
-        
+
         const data = await response.json();
-        
+
         if (data.success && data.url) {
             const imageUrl = data.url;
             const previewUrl = `${window.location.origin}/preview.html?img=${encodeURIComponent(imageUrl)}`;
-            
+
             qrcodeContainer.innerHTML = '';
             setTimeout(() => {
                 new QRCode(qrcodeContainer, {
@@ -1061,7 +1090,7 @@ async function showQRCode() {
                     colorLight: '#ffffff',
                     correctLevel: QRCode.CorrectLevel.M
                 });
-                
+
                 const successMsg = document.createElement('div');
                 successMsg.innerHTML = `
                     <p style="color: #4caf50; font-size: 0.9rem; margin-top: 15px; font-weight: 600;">
@@ -1079,10 +1108,10 @@ async function showQRCode() {
         } else {
             throw new Error(data.error || 'Upload thất bại');
         }
-        
+
     } catch (error) {
         console.error('Upload error:', error);
-        
+
         qrcodeContainer.innerHTML = `
             <div style="text-align: center;">
                 <p style="color: #ff9800; font-weight: 600; margin-bottom: 10px;">
@@ -1104,7 +1133,7 @@ async function showQRCode() {
 
 function closeQRModal() {
     qrModal.classList.remove('active');
-    
+
     // Clear QR code to prevent duplicates on next open
     const qrcodeContainer = document.getElementById('qrcode');
     if (qrcodeContainer) {
@@ -1114,7 +1143,7 @@ function closeQRModal() {
 
 function downloadImage() {
     if (!STATE.finalImage) return;
-    
+
     const link = document.createElement('a');
     link.download = `CEO-Photobooth-${Date.now()}.png`;
     link.href = STATE.finalImage;
@@ -1130,12 +1159,12 @@ function sleep(ms) {
 async function initCameraSelector() {
     const select = document.getElementById('cameraSelect');
     const refreshBtn = document.getElementById('refreshCameraBtn');
-    
+
     if (!select || !refreshBtn) return;
-    
+
     // Populate camera list
     await populateCameraList();
-    
+
     // Event listeners
     select.addEventListener('change', onCameraChange);
     refreshBtn.addEventListener('click', refreshCameraList);
@@ -1144,17 +1173,17 @@ async function initCameraSelector() {
 async function getCameraDevices() {
     try {
         console.log('🔍 Requesting camera permission...');
-        
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { width: { ideal: 1280 }, height: { ideal: 960 } } 
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 1280 }, height: { ideal: 960 } }
         });
-        
+
         console.log('✅ Camera permission granted');
         stream.getTracks().forEach(track => track.stop());
-        
+
         const devices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = devices.filter(device => device.kind === 'videoinput');
-        
+
         console.log(`📷 Found ${videoDevices.length} camera(s):`, videoDevices.map(d => d.label));
         return videoDevices;
     } catch (err) {
@@ -1181,10 +1210,10 @@ function detectCameraType(label) {
 function getCameraDisplay(camera, index) {
     const name = camera.label || `Camera ${index + 1}`;
     const type = detectCameraType(name);
-    
+
     const icons = { phone: '📱', virtual: '🎥', integrated: '📹', physical: '📹' };
     const suffix = type === 'virtual' ? ' (Virtual)' : '';
-    
+
     return {
         text: `${icons[type]} ${name}${suffix}`,
         type,
@@ -1195,17 +1224,17 @@ function getCameraDisplay(camera, index) {
 async function populateCameraList(autoStart = true) {
     const select = document.getElementById('cameraSelect');
     if (!select) return;
-    
+
     select.innerHTML = '<option value="">Đang tải...</option>';
-    
+
     const cameras = await getCameraDevices();
     select.innerHTML = '<option value="">📷 Chọn camera...</option>';
-    
+
     if (cameras.length === 0) {
         select.innerHTML = '<option value="" disabled>Không tìm thấy camera</option>';
         return;
     }
-    
+
     // Add camera options
     cameras.forEach((camera, index) => {
         const option = document.createElement('option');
@@ -1214,12 +1243,12 @@ async function populateCameraList(autoStart = true) {
         option.textContent = display.text;
         select.appendChild(option);
     });
-    
+
     // Auto-select and auto-start default camera
     if (!STATE.selectedDeviceId && cameras.length > 0) {
         const priority = ['integrated', 'physical', 'virtual', 'phone'];
         let defaultCamera = null;
-        
+
         for (const type of priority) {
             defaultCamera = cameras.find(c => {
                 const display = getCameraDisplay(c, 0);
@@ -1227,11 +1256,11 @@ async function populateCameraList(autoStart = true) {
             });
             if (defaultCamera) break;
         }
-        
+
         defaultCamera = defaultCamera || cameras[0];
         select.value = defaultCamera.deviceId;
         STATE.selectedDeviceId = defaultCamera.deviceId;
-        
+
         // Auto-start camera by default
         if (autoStart) {
             await startCamera(defaultCamera.deviceId);
@@ -1243,7 +1272,7 @@ async function populateCameraList(autoStart = true) {
 
 async function onCameraChange(event) {
     const deviceId = event.target.value;
-    
+
     if (!deviceId) {
         stopCamera();
         startBtn.classList.remove('hidden');
@@ -1251,7 +1280,7 @@ async function onCameraChange(event) {
         flipBtn.classList.add('hidden');
         return;
     }
-    
+
     stopCamera();
     const success = await startCamera(deviceId);
     if (success) STATE.selectedDeviceId = deviceId;
@@ -1270,7 +1299,7 @@ function initPhotoSlotButtons() {
             deletePhoto(index);
         });
     });
-    
+
     // Swap buttons
     document.querySelectorAll('.swap-photo-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1282,10 +1311,10 @@ function initPhotoSlotButtons() {
 
 function deletePhoto(index) {
     if (!STATE.photos[index]) return;
-    
+
     STATE.photos[index] = null;
-    
-    
+
+
     // Update UI
     const slot = document.querySelector(`.photo-slot[data-index="${index}"]`);
     slot.classList.remove('filled');
@@ -1303,33 +1332,33 @@ function deletePhoto(index) {
         </button>
         <input type="file" class="photo-upload-input" data-index="${index}" accept="image/*" style="display: none;">
     `;
-    
+
     // Re-attach event listeners for this slot
     const deleteBtn = slot.querySelector('.delete-photo-btn');
     const swapBtn = slot.querySelector('.swap-photo-btn');
     const uploadBtn = slot.querySelector('.upload-photo-btn');
     const uploadInput = slot.querySelector('.photo-upload-input');
-    
+
     deleteBtn.addEventListener('click', () => deletePhoto(index));
     swapBtn.addEventListener('click', () => openSwapModal(index));
     uploadBtn.addEventListener('click', () => uploadInput.click());
     uploadInput.addEventListener('change', (e) => handlePhotoUpload(e, index));
-    
+
     updatePhotoCount();
     updateButtons();
 }
 
 function openSwapModal(fromIndex) {
     if (!STATE.photos[fromIndex]) return;
-    
+
     swapFromIndex = fromIndex;
     swapOptions.innerHTML = '';
-    
+
     for (let i = 0; i < STATE.photos.length; i++) {
         const btn = document.createElement('button');
         btn.className = 'swap-option-btn';
         btn.textContent = `Ảnh ${i + 1}`;
-        
+
         if (i === fromIndex) {
             btn.classList.add('disabled');
             btn.textContent += ' (Hiện tại)';
@@ -1339,10 +1368,10 @@ function openSwapModal(fromIndex) {
         } else {
             btn.onclick = () => swapPhotos(fromIndex, i);
         }
-        
+
         swapOptions.appendChild(btn);
     }
-    
+
     swapModal.classList.add('active');
 }
 
@@ -1353,11 +1382,11 @@ function closeSwapModal() {
 
 function swapPhotos(fromIndex, toIndex) {
     if (fromIndex === toIndex) return;
-    
+
     const temp = STATE.photos[fromIndex];
     STATE.photos[fromIndex] = STATE.photos[toIndex];
     STATE.photos[toIndex] = temp;
-    
+
     // Update both slots
     [fromIndex, toIndex].forEach(index => {
         if (STATE.photos[index]) {
@@ -1366,7 +1395,7 @@ function swapPhotos(fromIndex, toIndex) {
             deletePhoto(index);
         }
     });
-    
+
     closeSwapModal();
 }
 
@@ -1376,15 +1405,15 @@ async function captureSinglePhoto() {
         alert('Đã chụp đủ 4 ảnh!');
         return;
     }
-    
+
     singleCaptureBtn.disabled = true;
-    
+
     if (STATE.countdownTime > 0) {
         await doCountdown();
     }
-    
+
     await capturePhoto(emptyIndex);
-    
+
     singleCaptureBtn.disabled = false;
     updateButtons();
 }
@@ -1406,6 +1435,15 @@ function openPhotoSelectionModal() {
     if (!STATE.allPhotos.length) return;
 
     photoSelectGrid.innerHTML = '';
+
+    // update modal texts
+    const maxSelectable = Math.min(STATE.requiredPhotos, STATE.allPhotos.length);
+    const title = document.getElementById('photoSelectCountTitle');
+    const sub = document.getElementById('photoSelectCountSub');
+    const btn = document.getElementById('photoSelectCountBtn');
+    if (title) title.textContent = maxSelectable;
+    if (sub) sub.textContent = maxSelectable;
+    if (btn) btn.textContent = maxSelectable;
 
     STATE.allPhotos.forEach((dataUrl, index) => {
         const item = document.createElement('div');
@@ -1431,8 +1469,8 @@ function openPhotoSelectionModal() {
                 item.classList.remove('selected');
                 label.textContent = 'Chọn';
             } else {
-                if (currentlySelected.length >= 4) {
-                    alert('Chỉ chọn tối đa 4 ảnh để in khung!');
+                if (currentlySelected.length >= maxSelectable) {
+                    alert(`Chỉ chọn tối đa ${maxSelectable} ảnh để in khung!`);
                     return;
                 }
                 item.classList.add('selected');
@@ -1454,8 +1492,9 @@ async function confirmPhotoSelection() {
         photoSelectGrid.querySelectorAll('.photo-select-item.selected')
     );
 
-    if (selectedItems.length !== 4) {
-        alert('Vui lòng chọn đúng 4 ảnh để in khung!');
+    const maxSelectable = Math.min(STATE.requiredPhotos, STATE.allPhotos.length);
+    if (selectedItems.length !== maxSelectable) {
+        alert(`Vui lòng chọn đúng ${maxSelectable} ảnh để in khung!`);
         return;
     }
 
@@ -1465,20 +1504,30 @@ async function confirmPhotoSelection() {
         .map(i => STATE.allPhotos[i])
         .filter(Boolean);
 
-    // Put chosen photos into the 4 visible slots
-    STATE.photos = [null, null, null, null];
-    chosen.forEach((dataUrl, i) => {
-        STATE.photos[i] = dataUrl;
-        renderPhotoSlot(i);
-    });
+    STATE.photos = chosen;
 
     photoSelectModal.classList.remove('active');
 
     updatePhotoCount();
     updateButtons();
 
-    // Sau khi chọn 4 ảnh, chuyển sang bước chọn khung
-    openFrameModal();
+    // Directly generate frame and show QR
+    const loading = document.createElement('div');
+    loading.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 20px 40px; border-radius: 10px; z-index: 9999; font-size: 18px;';
+    loading.textContent = '⏳ Đang xử lý...';
+    document.body.appendChild(loading);
+
+    try {
+        STATE.finalImage = await createFramedImage(STATE.selectedFrame);
+        document.body.removeChild(loading);
+        showQRCode();
+    } catch (error) {
+        if (document.body.contains(loading)) {
+            document.body.removeChild(loading);
+        }
+        console.error('Frame selection error:', error);
+        alert('Lỗi khi xử lý ảnh: ' + error.message);
+    }
 }
 
 async function handleModalUploadFiles(event) {
@@ -1514,7 +1563,7 @@ function initUploadButtons() {
         const index = parseInt(btn.dataset.index);
         const input = document.querySelector(`.photo-upload-input[data-index="${index}"]`);
         if (!input) return;
-        
+
         btn.addEventListener('click', () => input.click());
         input.addEventListener('change', (e) => handlePhotoUpload(e, index));
     });
@@ -1523,52 +1572,52 @@ function initUploadButtons() {
 async function handlePhotoUpload(event, index) {
     const file = event.target.files[0];
     if (!file) return;
-    
+
     // Validate file type
     if (!file.type.startsWith('image/')) {
         alert('Vui lòng chọn file ảnh!');
         return;
     }
-    
+
     try {
         // Read file as data URL
         const reader = new FileReader();
-        
+
         reader.onload = async (e) => {
             const imageData = e.target.result;
-            
+
             // Load image to get dimensions
             const img = await loadImageSafe(imageData);
-            
+
             // Get frame config to determine target size
             const config = STATE.selectedFrame ? FRAME_POSITIONS[STATE.selectedFrame] : null;
             const targetSize = config ? config.photoSize : { width: 789, height: 584 };
-            
+
             // Create canvas to crop/resize image
             const cropCanvas = document.createElement('canvas');
             cropCanvas.width = targetSize.width;
             cropCanvas.height = targetSize.height;
             const cropCtx = cropCanvas.getContext('2d');
-            
+
             // Calculate scaling to cover (like object-fit: cover)
             const scaleX = targetSize.width / img.width;
             const scaleY = targetSize.height / img.height;
             const scale = Math.max(scaleX, scaleY);
-            
+
             const scaledWidth = img.width * scale;
             const scaledHeight = img.height * scale;
-            
+
             // Center crop
             const offsetX = (scaledWidth - targetSize.width) / 2;
             const offsetY = (scaledHeight - targetSize.height) / 2;
-            
+
             cropCtx.drawImage(img, -offsetX, -offsetY, scaledWidth, scaledHeight);
-            
+
             // Save cropped image
             const croppedData = cropCanvas.toDataURL('image/png');
             STATE.photos[index] = croppedData;
             STATE.allPhotos.push(croppedData);
-            
+
             // Update UI
             const slot = document.querySelector(`.photo-slot[data-index="${index}"]`);
             const imgElement = document.createElement('img');
@@ -1576,7 +1625,7 @@ async function handlePhotoUpload(event, index) {
             slot.innerHTML = '';
             slot.appendChild(imgElement);
             slot.classList.add('filled');
-            
+
             // Re-add buttons
             const uploadBtn = document.createElement('button');
             uploadBtn.className = 'upload-photo-btn';
@@ -1584,19 +1633,19 @@ async function handlePhotoUpload(event, index) {
             uploadBtn.innerHTML = '<i class="fas fa-upload"></i>';
             uploadBtn.title = 'Tải ảnh lên';
             slot.appendChild(uploadBtn);
-            
+
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-photo-btn';
             deleteBtn.dataset.index = index;
             deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
             slot.appendChild(deleteBtn);
-            
+
             const swapBtn = document.createElement('button');
             swapBtn.className = 'swap-photo-btn';
             swapBtn.dataset.index = index;
             swapBtn.innerHTML = '<i class="fas fa-arrows-rotate"></i>';
             slot.appendChild(swapBtn);
-            
+
             const uploadInput = document.createElement('input');
             uploadInput.type = 'file';
             uploadInput.className = 'photo-upload-input';
@@ -1604,24 +1653,24 @@ async function handlePhotoUpload(event, index) {
             uploadInput.accept = 'image/*';
             uploadInput.style.display = 'none';
             slot.appendChild(uploadInput);
-            
+
             // Re-attach event listeners
             uploadBtn.addEventListener('click', () => uploadInput.click());
             uploadInput.addEventListener('change', (e) => handlePhotoUpload(e, index));
             deleteBtn.addEventListener('click', () => deletePhoto(index));
             swapBtn.addEventListener('click', () => openSwapModal(index));
-            
+
             updatePhotoCount();
             updateButtons();
         };
-        
+
         reader.readAsDataURL(file);
-        
+
     } catch (error) {
         console.error('Upload error:', error);
         alert('Lỗi khi tải ảnh: ' + error.message);
     }
-    
+
     // Reset input
     event.target.value = '';
 }
