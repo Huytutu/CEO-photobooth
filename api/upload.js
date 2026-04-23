@@ -1,8 +1,8 @@
 // Vercel Serverless Function to proxy image upload to Catbox.moe
-import FormData from 'form-data';
-import fetch from 'node-fetch';
+const FormData = require('form-data');
+const fetch = require('node-fetch');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');

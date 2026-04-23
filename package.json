@@ -1,7 +1,7 @@
 {
   "name": "ceo-photobooth",
   "version": "1.0.0",
-  "description": "CEO Photobooth - 4-photo capture with frames",
+  "description": "CEO Photobooth - capture with frames",
   "dependencies": {
     "form-data": "^4.0.0",
     "node-fetch": "^2.7.0"
