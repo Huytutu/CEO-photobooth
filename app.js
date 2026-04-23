@@ -1056,28 +1056,28 @@ async function showQRCode() {
     qrcodeContainer.innerHTML = '<p style="color: #667eea; font-weight: 600;"><i class="fas fa-spinner fa-spin"></i> Đang upload ảnh...</p>';
 
     try {
-        const base64Data = STATE.finalImage.split(',')[1];
+        // Chuyển ảnh thành Blob để tải thẳng từ trình duyệt
+        const fetchResponse = await fetch(STATE.finalImage);
+        const blob = await fetchResponse.blob();
+        
+        const formData = new FormData();
+        formData.append('file', blob, 'ceo-photobooth.jpg');
 
-        const response = await uploadWithTimeout('/api/upload', {
+        // Tải trực tiếp lên tmpfiles.org (không qua Vercel để tránh lỗi server)
+        const uploadRes = await fetch('https://tmpfiles.org/api/v1/upload', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: base64Data })
-        }, 10000);
+            body: formData
+        });
 
-        // Check if response is JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            throw new Error(`Server đang bảo trì hoặc không có kết nối (${response.status})`);
+        if (!uploadRes.ok) {
+            throw new Error(`Tải ảnh thất bại (${uploadRes.status})`);
         }
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(`Server lỗi ${response.status}: ${data.error || 'Unknown'}`);
-        }
-
-        if (data.success && data.url) {
-            const imageUrl = data.url;
+        const data = await uploadRes.json();
+        
+        if (data.status === 'success' && data.data && data.data.url) {
+            // Đổi link gốc thành link tải trực tiếp (thêm /dl/)
+            const imageUrl = data.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
             const previewUrl = `${window.location.origin}/preview.html?img=${encodeURIComponent(imageUrl)}`;
 
             qrcodeContainer.innerHTML = '';
