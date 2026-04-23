@@ -35,13 +35,17 @@ async function handler(req, res) {
             knownLength: buffer.length
         });
         
+        // Calculate content length
+        const contentLength = form.getLengthSync();
+        
         // Upload to Catbox via server (bypass CORS)
         const response = await fetch('https://catbox.moe/user/api.php', {
             method: 'POST',
             body: form,
             headers: {
                 ...form.getHeaders(),
-                'User-Agent': 'CEO-Photobooth/1.0'
+                'Content-Length': contentLength,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
             }
         });
         
