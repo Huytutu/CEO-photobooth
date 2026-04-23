@@ -1055,30 +1055,33 @@ async function showQRCode() {
     const qrcodeContainer = document.getElementById('qrcode');
     qrcodeContainer.innerHTML = '<p style="color: #667eea; font-weight: 600;"><i class="fas fa-spinner fa-spin"></i> Đang upload ảnh...</p>';
 
-    try {
-        const base64Data = STATE.finalImage.split(',')[1];
+        // Convert data URL to Blob
+        const fetchResponse = await fetch(STATE.finalImage);
+        const blob = await fetchResponse.blob();
+        
+        // Prepare FormData for Catbox directly
+        const formData = new FormData();
+        formData.append('reqtype', 'fileupload');
+        formData.append('fileToUpload', blob, 'photo.jpg');
 
-        const response = await uploadWithTimeout('/api/upload', {
+        // Direct upload to Catbox
+        const response = await fetch('https://catbox.moe/user/api.php', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: base64Data })
-        }, 10000);
-
-        // Check if response is JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            throw new Error(`Server đang bảo trì hoặc không có kết nối (${response.status})`);
-        }
-
-        const data = await response.json();
+            body: formData
+        });
 
         if (!response.ok) {
-            throw new Error(`Server lỗi ${response.status}: ${data.error || 'Unknown'}`);
+            throw new Error(`Server Catbox từ chối (${response.status})`);
         }
 
-        if (data.success && data.url) {
-            const imageUrl = data.url;
-            const previewUrl = `${window.location.origin}/preview.html?img=${encodeURIComponent(imageUrl)}`;
+        const dataText = await response.text();
+        
+        if (!dataText.startsWith('https://')) {
+             throw new Error(`Catbox trả về lỗi: ${dataText}`);
+        }
+        
+        const imageUrl = dataText.trim();
+        const previewUrl = `${window.location.origin}/preview.html?img=${encodeURIComponent(imageUrl)}`;
 
             qrcodeContainer.innerHTML = '';
             setTimeout(() => {
@@ -1105,10 +1108,7 @@ async function showQRCode() {
                 `;
                 qrcodeContainer.appendChild(successMsg);
             }, 50);
-        } else {
-            throw new Error(data.error || 'Upload thất bại');
-        }
-
+        
     } catch (error) {
         console.error('Upload error:', error);
 
