@@ -15,7 +15,7 @@ const STATE = {
     manualPickFourForFrame: true,
     isCapturing: false,
     isFlipped: true,
-    selectedFrame: './Frames/Frame4.png',
+    selectedFrame: './Frames/Basic.png',
     requiredPhotos: 4,
     finalImage: null,
     selectedDeviceId: null
@@ -93,30 +93,31 @@ let FRAME_POSITIONS = {
             }
         ]
     },
-    "./Frames/Frame4.png": {
+    "./Frames/Basic.png": {
         "photoSize": {
-            "width": 847,
-            "height": 622
+            "width": 710,
+            "height": 520
         },
+        "drawPhotosOnTop": true,
         "positions": [
             {
-                "x": 58,
-                "y": 76,
+                "x": 50,
+                "y": 60,
                 "centerX": false
             },
             {
-                "x": 58,
-                "y": 721,
+                "x": 50,
+                "y": 620,
                 "centerX": false
             },
             {
-                "x": 58,
-                "y": 1371,
+                "x": 50,
+                "y": 1160,
                 "centerX": false
             },
             {
-                "x": 58,
-                "y": 2016,
+                "x": 50,
+                "y": 1710,
                 "centerX": false
             }
         ]
@@ -847,7 +848,7 @@ let currentPreviewFrame = null;
 function loadFrames() {
     if (!frameGrid) return;
     const frames = [
-        { name: 'Basic', path: './Frames/Frame4.png' },
+        { name: 'Basic', path: './Frames/Basic.png' },
         { name: 'HoLive', path: './Frames/HoLive.png' },
         { name: 'HolaRadio', path: './Frames/HolaRadio.png' }
     ];
@@ -968,9 +969,9 @@ async function createFramedImage(framePath, isPreview = false) {
 function openFrameModal() {
     frameModal.classList.add('active');
 
-    // Auto-select Frame4 by default
+    // Auto-select Basic by default
     setTimeout(() => {
-        const defaultFrame = document.querySelector('.frame-item[data-frame-path="./Frames/Frame4.png"]');
+        const defaultFrame = document.querySelector('.frame-item[data-frame-path="./Frames/Basic.png"]');
         const fallbackFrame = document.querySelector('.frame-item');
         const frameToSelect = defaultFrame || fallbackFrame;
         if (frameToSelect) {
@@ -1059,7 +1060,7 @@ async function showQRCode() {
         // Chuyển ảnh thành Blob để tải thẳng từ trình duyệt
         const fetchResponse = await fetch(STATE.finalImage);
         const blob = await fetchResponse.blob();
-        
+
         const formData = new FormData();
         formData.append('file', blob, 'ceo-photobooth.jpg');
 
@@ -1074,7 +1075,7 @@ async function showQRCode() {
         }
 
         const data = await uploadRes.json();
-        
+
         if (data.status === 'success' && data.data && data.data.url) {
             // Đổi link gốc thành link tải trực tiếp (thêm /dl/)
             const imageUrl = data.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');

@@ -10,7 +10,7 @@ const urlsToCache = [
   '/Frames/Frame1.png',
   '/Frames/Frame2.png',
   '/Frames/Frame3.png',
-  '/Frames/Frame4.png',
+  '/Frames/Basic.png',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];

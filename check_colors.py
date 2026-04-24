@@ -27,5 +27,5 @@ def find_boxes(image_path):
     for color, count in color_counts.most_common(5):
         print(f"Color {color}: roughly {count * 100} pixels")
 
-for frame in ["Frames/HoLive.png", "Frames/HolaRadio.png", "Frames/Frame4.png"]:
+for frame in ["Frames/HoLive.png", "Frames/HolaRadio.png", "Frames/Basic.png"]:
     find_boxes(frame)
