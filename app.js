@@ -95,59 +95,40 @@ let FRAME_POSITIONS = {
     },
     "./Frames/Basic.png": {
         "photoSize": {
-            "width": 710,
-            "height": 520
+            "width": 603,
+            "height": 448
         },
-        "drawPhotosOnTop": true,
         "positions": [
-            {
-                "x": 50,
-                "y": 60,
-                "centerX": false
-            },
-            {
-                "x": 50,
-                "y": 620,
-                "centerX": false
-            },
-            {
-                "x": 50,
-                "y": 1160,
-                "centerX": false
-            },
-            {
-                "x": 50,
-                "y": 1710,
-                "centerX": false
-            }
+            { "x": 31, "y": 44, "centerX": false },
+            { "x": 31, "y": 494, "centerX": false },
+            { "x": 31, "y": 936, "centerX": false },
+            { "x": 31, "y": 1386, "centerX": false }
         ]
     },
     "./Frames/HoLive.png": {
         "photoSize": {
-            "width": 690,
-            "height": 440
+            "width": 590,
+            "height": 385
         },
-        "drawPhotosOnTop": true,
         "positions": [
-            { "x": 120, "y": 620, "photoIndex": 0, "centerX": false },
-            { "x": 120, "y": 1100, "photoIndex": 1, "centerX": false },
-            { "x": 120, "y": 1570, "photoIndex": 2, "centerX": false },
-            { "x": 850, "y": 620, "photoIndex": 3, "centerX": false },
-            { "x": 850, "y": 1100, "photoIndex": 4, "centerX": false },
-            { "x": 850, "y": 1570, "photoIndex": 5, "centerX": false }
+            { "x": 84, "y": 494, "photoIndex": 0, "centerX": false },
+            { "x": 84, "y": 883, "photoIndex": 1, "centerX": false },
+            { "x": 84, "y": 1270, "photoIndex": 2, "centerX": false },
+            { "x": 684, "y": 494, "photoIndex": 3, "centerX": false },
+            { "x": 684, "y": 883, "photoIndex": 4, "centerX": false },
+            { "x": 684, "y": 1270, "photoIndex": 5, "centerX": false }
         ]
     },
     "./Frames/HolaRadio.png": {
         "photoSize": {
-            "width": 640,
-            "height": 410
+            "width": 552,
+            "height": 364
         },
-        "drawPhotosOnTop": true,
         "positions": [
-            { "x": 90, "y": 140, "photoIndex": 0, "centerX": false },
-            { "x": 90, "y": 590, "photoIndex": 1, "centerX": false },
-            { "x": 90, "y": 1050, "photoIndex": 2, "centerX": false },
-            { "x": 90, "y": 1510, "photoIndex": 3, "centerX": false }
+            { "x": 54, "y": 98, "photoIndex": 0, "centerX": false },
+            { "x": 57, "y": 471, "photoIndex": 1, "centerX": false },
+            { "x": 61, "y": 844, "photoIndex": 2, "centerX": false },
+            { "x": 57, "y": 1220, "photoIndex": 3, "centerX": false }
         ]
     }
 };
