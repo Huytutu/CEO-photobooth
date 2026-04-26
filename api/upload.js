@@ -1,4 +1,4 @@
-// Vercel Serverless Function to proxy image upload to Catbox.moe
+// Vercel Serverless Function to proxy image upload to 0x0.st
 const FormData = require('form-data');
 const fetch = require('node-fetch');
 
@@ -26,40 +26,35 @@ async function handler(req, res) {
         // Convert base64 to buffer
         const buffer = Buffer.from(image, 'base64');
         
-        // Create FormData for Catbox
+        // Create FormData for 0x0.st
         const form = new FormData();
-        form.append('reqtype', 'fileupload');
-        form.append('fileToUpload', buffer, {
+        form.append('file', buffer, {
             filename: 'photo.png',
             contentType: 'image/png',
             knownLength: buffer.length
         });
         
-        // Calculate content length
-        const contentLength = form.getLengthSync();
-        
-        // Upload to Catbox via server (bypass CORS)
-        const response = await fetch('https://catbox.moe/user/api.php', {
+        // Upload to 0x0.st via server (bypass CORS)
+        const response = await fetch('https://0x0.st', {
             method: 'POST',
             body: form,
             headers: {
                 ...form.getHeaders(),
-                'Content-Length': contentLength,
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                'User-Agent': 'Mozilla/5.0'
             }
         });
         
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('Catbox error:', response.status, errorText);
-            throw new Error(`Catbox returned ${response.status}`);
+            console.error('0x0.st error:', response.status, errorText);
+            throw new Error(`Upload service returned ${response.status}`);
         }
         
         const imageUrl = await response.text();
         
         if (!imageUrl || !imageUrl.trim().startsWith('https://')) {
-            console.error('Invalid Catbox response:', imageUrl);
-            throw new Error('Invalid response from Catbox');
+            console.error('Invalid 0x0.st response:', imageUrl);
+            throw new Error('Invalid response from upload service');
         }
         
         return res.status(200).json({
