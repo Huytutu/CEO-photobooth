@@ -11,7 +11,7 @@ async function handler(req, res) {
 
     const { url } = req.query;
 
-    if (!url || !url.startsWith('https://0x0.st/')) {
+    if (!url || !url.startsWith('https://i.ibb.co/')) {
         return res.status(400).json({ error: 'Invalid URL' });
     }
 
