@@ -271,9 +271,9 @@
           link.download = `CEO-Photo-${Date.now()}.jpg`;
           link.target = "_blank";
 
-          // Try to download via blob (better for cross-origin)
+          // Try to download via proxy blob (avoids CORS on catbox.moe)
           try {
-            const response = await fetch(imageUrl, { mode: "cors" });
+            const response = await fetch(`/api/image-proxy?url=${encodeURIComponent(imageUrl)}`);
             const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
             link.href = blobUrl;

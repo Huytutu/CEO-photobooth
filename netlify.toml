@@ -1,7 +1,20 @@
 # Netlify configuration
 [build]
   publish = "."
-  
+  functions = "netlify/functions"
+
+# Expose Netlify Functions under /api/* for convenience
+[[redirects]]
+  from = "/api/upload"
+  to = "/.netlify/functions/upload"
+  status = 200
+
+[[redirects]]
+  from = "/api/image-proxy"
+  to = "/.netlify/functions/image-proxy"
+  status = 200
+
+# SPA fallback — must be last
 [[redirects]]
   from = "/*"
   to = "/index.html"

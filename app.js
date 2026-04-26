@@ -1038,17 +1038,14 @@ async function showQRCode() {
     qrcodeContainer.innerHTML = '<p style="color: #667eea; font-weight: 600;"><i class="fas fa-spinner fa-spin"></i> Đang upload ảnh...</p>';
 
     try {
-        // Chuyển ảnh thành Blob để tải thẳng từ trình duyệt
-        const fetchResponse = await fetch(STATE.finalImage);
-        const blob = await fetchResponse.blob();
+        // Chuyển ảnh thành base64 để gửi lên Vercel proxy
+        const base64 = STATE.finalImage.split(',')[1];
 
-        const formData = new FormData();
-        formData.append('file', blob, 'ceo-photobooth.jpg');
-
-        // Tải trực tiếp lên tmpfiles.org (không qua Vercel để tránh lỗi server)
-        const uploadRes = await fetch('https://tmpfiles.org/api/v1/upload', {
+        // Upload qua Vercel serverless function (tránh CORS, dùng catbox.moe)
+        const uploadRes = await fetch('/api/upload', {
             method: 'POST',
-            body: formData
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: base64 })
         });
 
         if (!uploadRes.ok) {
@@ -1057,9 +1054,8 @@ async function showQRCode() {
 
         const data = await uploadRes.json();
 
-        if (data.status === 'success' && data.data && data.data.url) {
-            // Đổi link gốc thành link tải trực tiếp (thêm /dl/)
-            const imageUrl = data.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+        if (data.success && data.url) {
+            const imageUrl = data.url;
             const previewUrl = `${window.location.origin}/preview.html?img=${encodeURIComponent(imageUrl)}`;
 
             qrcodeContainer.innerHTML = '';
