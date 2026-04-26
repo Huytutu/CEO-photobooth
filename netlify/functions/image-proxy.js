@@ -13,7 +13,7 @@ exports.handler = async function (event) {
 
     const url = event.queryStringParameters && event.queryStringParameters.url;
 
-    if (!url || !url.startsWith('https://files.catbox.moe/')) {
+    if (!url || !url.startsWith('https://0x0.st/')) {
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid URL' }) };
     }
 
