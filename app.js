@@ -38,14 +38,14 @@ let FRAME_POSITIONS = {
     },
     "./Frames/PTB_4.png": {
         "photoSize": {
-            "width": 490,
-            "height": 310
+            "width": 472,
+            "height": 311
         },
         "positions": [
-            { "x": 54, "y": 288, "centerX": false },
-            { "x": 53, "y": 654, "centerX": false },
-            { "x": 54, "y": 1020, "centerX": false },
-            { "x": 59, "y": 1386, "centerX": false }
+            { "x": 59, "y": 281, "centerX": false },
+            { "x": 59, "y": 647, "centerX": false },
+            { "x": 60, "y": 1013, "centerX": false },
+            { "x": 63, "y": 1379, "centerX": false }
         ]
     },
     "./Frames/PTB_6.png": {
