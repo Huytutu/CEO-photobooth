@@ -15,7 +15,7 @@ const STATE = {
     manualPickFourForFrame: true,
     isCapturing: false,
     isFlipped: true,
-    selectedFrame: './Frames/Basic.png',
+    selectedFrame: './Frames/PTB.png',
     requiredPhotos: 4,
     finalImage: null,
     selectedDeviceId: null
@@ -24,111 +24,37 @@ const STATE = {
 
 
 let FRAME_POSITIONS = {
-    "./Frames/Frame1.png": {
+    "./Frames/PTB.png": {
         "photoSize": {
-            "width": 780,
-            "height": 575
+            "width": 484,
+            "height": 311
         },
         "positions": [
-            {
-                "x": 48,
-                "y": 668,
-                "centerX": false
-            },
-            {
-                "x": 48,
-                "y": 1281,
-                "centerX": false
-            },
-            {
-                "x": 52,
-                "y": 1900,
-                "centerX": false
-            }
+            { "x": 53, "y": 199, "centerX": false },
+            { "x": 52, "y": 532, "centerX": false },
+            { "x": 53, "y": 865, "centerX": false },
+            { "x": 53, "y": 1199, "centerX": false }
         ]
     },
-    "./Frames/Frame2.png": {
+    "./Frames/PTB_4.png": {
         "photoSize": {
-            "width": 780,
-            "height": 562
+            "width": 490,
+            "height": 310
         },
         "positions": [
-            {
-                "x": 48,
-                "y": 681,
-                "centerX": false
-            },
-            {
-                "x": 48,
-                "y": 1291,
-                "centerX": false
-            },
-            {
-                "x": 52,
-                "y": 1900,
-                "centerX": false
-            }
+            { "x": 54, "y": 288, "centerX": false },
+            { "x": 53, "y": 654, "centerX": false },
+            { "x": 54, "y": 1020, "centerX": false },
+            { "x": 59, "y": 1386, "centerX": false }
         ]
     },
-    "./Frames/Frame3.png": {
+    "./Frames/PTB_6.png": {
         "photoSize": {
-            "width": 789,
-            "height": 489
+            "width": 1118,
+            "height": 1012
         },
         "positions": [
-            {
-                "x": 46,
-                "y": 715,
-                "centerX": false
-            },
-            {
-                "x": 47,
-                "y": 1327,
-                "centerX": false
-            },
-            {
-                "x": 46,
-                "y": 1940,
-                "centerX": false
-            }
-        ]
-    },
-    "./Frames/Basic.png": {
-        "photoSize": {
-            "width": 603,
-            "height": 448
-        },
-        "positions": [
-            { "x": 31, "y": 44, "centerX": false },
-            { "x": 31, "y": 494, "centerX": false },
-            { "x": 31, "y": 936, "centerX": false },
-            { "x": 31, "y": 1386, "centerX": false }
-        ]
-    },
-    "./Frames/HoLive.png": {
-        "photoSize": {
-            "width": 590,
-            "height": 385
-        },
-        "positions": [
-            { "x": 84, "y": 494, "photoIndex": 0, "centerX": false },
-            { "x": 84, "y": 883, "photoIndex": 1, "centerX": false },
-            { "x": 84, "y": 1270, "photoIndex": 2, "centerX": false },
-            { "x": 684, "y": 494, "photoIndex": 3, "centerX": false },
-            { "x": 684, "y": 883, "photoIndex": 4, "centerX": false },
-            { "x": 684, "y": 1270, "photoIndex": 5, "centerX": false }
-        ]
-    },
-    "./Frames/HolaRadio.png": {
-        "photoSize": {
-            "width": 552,
-            "height": 364
-        },
-        "positions": [
-            { "x": 54, "y": 98, "photoIndex": 0, "centerX": false },
-            { "x": 57, "y": 471, "photoIndex": 1, "centerX": false },
-            { "x": 61, "y": 844, "photoIndex": 2, "centerX": false },
-            { "x": 57, "y": 1220, "photoIndex": 3, "centerX": false }
+            { "x": 37, "y": 489, "centerX": false }
         ]
     }
 };
@@ -829,9 +755,9 @@ let currentPreviewFrame = null;
 function loadFrames() {
     if (!frameGrid) return;
     const frames = [
-        { name: 'Basic', path: './Frames/Basic.png' },
-        { name: 'HoLive', path: './Frames/HoLive.png' },
-        { name: 'HolaRadio', path: './Frames/HolaRadio.png' }
+        { name: 'PTB', path: './Frames/PTB.png' },
+        { name: 'PTB_4', path: './Frames/PTB_4.png' },
+        { name: 'PTB_6', path: './Frames/PTB_6.png' }
     ];
 
     frameGrid.innerHTML = '';
@@ -950,9 +876,9 @@ async function createFramedImage(framePath, isPreview = false) {
 function openFrameModal() {
     frameModal.classList.add('active');
 
-    // Auto-select Basic by default
+    // Auto-select PTB by default
     setTimeout(() => {
-        const defaultFrame = document.querySelector('.frame-item[data-frame-path="./Frames/Basic.png"]');
+        const defaultFrame = document.querySelector('.frame-item[data-frame-path="./Frames/PTB.png"]');
         const fallbackFrame = document.querySelector('.frame-item');
         const frameToSelect = defaultFrame || fallbackFrame;
         if (frameToSelect) {

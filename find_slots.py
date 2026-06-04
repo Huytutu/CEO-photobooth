@@ -49,7 +49,7 @@ def find_transparent_slots(image_path):
     regions.sort(key=lambda r: r['y'])
     return regions
 
-for frame in ["Frames/HoLive.png", "Frames/HolaRadio.png"]:
+for frame in ["Frames/PTB.png", "Frames/PTB_4.png", "Frames/PTB_6.png"]:
     try:
         regions = find_transparent_slots(frame)
         if not regions:
@@ -59,8 +59,8 @@ for frame in ["Frames/HoLive.png", "Frames/HolaRadio.png"]:
         widths = [r["width"] for r in regions]
         heights = [r["height"] for r in regions]
         
-        common_w = round(statistics.median(widths))
-        common_h = round(statistics.median(heights))
+        common_w = round(statistics.median(widths)) if widths else 0
+        common_h = round(statistics.median(heights)) if heights else 0
         
         print(f'"./{frame}": {{')
         print(f'  "photoSize": {{ "width": {common_w}, "height": {common_h} }},')
