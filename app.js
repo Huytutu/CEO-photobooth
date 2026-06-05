@@ -866,21 +866,29 @@ async function createFramedImage(framePath, isPreview = false) {
             x = (canvas.width - size.width * scale) / 2;
         }
 
-        const scaleX = (size.width * scale) / photoImg.width;
-        const scaleY = (size.height * scale) / photoImg.height;
+        const bleed = config.bleed !== undefined ? config.bleed : (config.drawPhotosOnTop ? 0 : 6);
+        const bleedPx = bleed * scale;
+
+        const drawX = x - bleedPx;
+        const drawY = (pos.y * scale) - bleedPx;
+        const drawW = (size.width * scale) + (2 * bleedPx);
+        const drawH = (size.height * scale) + (2 * bleedPx);
+
+        const scaleX = drawW / photoImg.width;
+        const scaleY = drawH / photoImg.height;
         const imgScale = Math.max(scaleX, scaleY);
 
         const scaledWidth = photoImg.width * imgScale;
         const scaledHeight = photoImg.height * imgScale;
 
-        const offsetX = (scaledWidth - size.width * scale) / 2;
-        const offsetY = (scaledHeight - size.height * scale) / 2;
+        const offsetX = (scaledWidth - drawW) / 2;
+        const offsetY = (scaledHeight - drawH) / 2;
 
         ctx.save();
         ctx.beginPath();
-        ctx.rect(x, pos.y * scale, size.width * scale, size.height * scale);
+        ctx.rect(drawX, drawY, drawW, drawH);
         ctx.clip();
-        ctx.drawImage(photoImg, x - offsetX, pos.y * scale - offsetY, scaledWidth, scaledHeight);
+        ctx.drawImage(photoImg, drawX - offsetX, drawY - offsetY, scaledWidth, scaledHeight);
         ctx.restore();
     });
 
