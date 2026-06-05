@@ -462,7 +462,7 @@ async function startCamera(deviceId = null) {
             video.onloadedmetadata = () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                
+
                 // Adjust aspect ratio based on camera stream
                 const cameraContainer = document.querySelector('.camera-container');
                 if (cameraContainer && video.videoWidth && video.videoHeight) {
@@ -866,7 +866,7 @@ async function createFramedImage(framePath, isPreview = false) {
             x = (canvas.width - size.width * scale) / 2;
         }
 
-        const bleed = config.bleed !== undefined ? config.bleed : (config.drawPhotosOnTop ? 0 : 6);
+        const bleed = config.bleed !== undefined ? config.bleed : (config.drawPhotosOnTop ? 0 : 12);
         const bleedPx = bleed * scale;
 
         const drawX = x - bleedPx;
