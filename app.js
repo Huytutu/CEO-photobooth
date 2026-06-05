@@ -462,6 +462,16 @@ async function startCamera(deviceId = null) {
             video.onloadedmetadata = () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
+                
+                // Adjust aspect ratio based on camera stream
+                const cameraContainer = document.querySelector('.camera-container');
+                if (cameraContainer && video.videoWidth && video.videoHeight) {
+                    cameraContainer.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+                }
+                if (video && video.videoWidth && video.videoHeight) {
+                    video.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+                }
+
                 video.play();
                 resolve();
             };
@@ -509,6 +519,14 @@ function stopCamera() {
     if (STATE.stream) {
         STATE.stream.getTracks().forEach(track => track.stop());
         STATE.stream = null;
+    }
+    // Reset aspect ratio to default
+    const cameraContainer = document.querySelector('.camera-container');
+    if (cameraContainer) {
+        cameraContainer.style.aspectRatio = '';
+    }
+    if (video) {
+        video.style.aspectRatio = '';
     }
 }
 

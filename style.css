@@ -598,7 +598,7 @@ body {
 .capture-preview-overlay img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
     border-radius: 15px;
 }
 
@@ -608,7 +608,7 @@ body {
     border-radius: 15px;
     display: block;
     background: #000;
-    object-fit: contain;
+    object-fit: cover;
     aspect-ratio: 4 / 3;
 }
 
