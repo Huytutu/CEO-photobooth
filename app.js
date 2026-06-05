@@ -56,6 +56,18 @@ let FRAME_POSITIONS = {
         "positions": [
             { "x": 37, "y": 489, "centerX": false }
         ]
+    },
+    "./Frames/PTB_new.png": {
+        "photoSize": {
+            "width": 492,
+            "height": 311
+        },
+        "positions": [
+            { "x": 54, "y": 288, "centerX": false },
+            { "x": 53, "y": 654, "centerX": false },
+            { "x": 53, "y": 1020, "centerX": false },
+            { "x": 58, "y": 1386, "centerX": false }
+        ]
     }
 };
 
@@ -775,7 +787,8 @@ function loadFrames() {
     const frames = [
         { name: 'PTB', path: './Frames/PTB.png' },
         { name: 'PTB_4', path: './Frames/PTB_4.png' },
-        { name: 'PTB_6', path: './Frames/PTB_6.png' }
+        { name: 'PTB_6', path: './Frames/PTB_6.png' },
+        { name: 'PTB_new', path: './Frames/PTB_new.png' }
     ];
 
     frameGrid.innerHTML = '';
@@ -866,7 +879,7 @@ async function createFramedImage(framePath, isPreview = false) {
             x = (canvas.width - size.width * scale) / 2;
         }
 
-        const bleed = config.bleed !== undefined ? config.bleed : (config.drawPhotosOnTop ? 0 : 12);
+        const bleed = config.bleed !== undefined ? config.bleed : (config.drawPhotosOnTop ? 0 : 13);
         const bleedPx = bleed * scale;
 
         const drawX = x - bleedPx;

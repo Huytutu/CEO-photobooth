@@ -49,7 +49,7 @@ def find_transparent_slots(image_path):
     regions.sort(key=lambda r: r['y'])
     return regions
 
-for frame in ["Frames/PTB.png", "Frames/PTB_4.png", "Frames/PTB_6.png"]:
+for frame in ["Frames/PTB.png", "Frames/PTB_4.png", "Frames/PTB_6.png", "Frames/PTB_new.png"]:
     try:
         regions = find_transparent_slots(frame)
         if not regions:
